@@ -1,0 +1,1221 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>VPC Networking | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-383ac8dce987ca8ef68702cd64980b76aa83af6d.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="HRkmCfcuwM8e37MGOHVHoKurbBXLkaSImCKdhjOTmvPCmAgwq8/yr8X2T/cSpk1QFjP79tn4c8KJN0Tgo4av4g==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;search_updates&quot;,&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;alexandria_show_bundle_errors&quot;,&quot;program_announcements&quot;,&quot;canonical_domain_redirect&quot;,&quot;program_learning_assignment&quot;,&quot;barker&quot;,&quot;used_in&quot;,&quot;course_upgrade&quot;,&quot;community_forum&quot;,&quot;peer_assignment&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;teams&quot;,&quot;content_provider_admin&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab, you create several VPC networks and VM instances and test connectivity across networks.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='VPC Networking | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab, you create several VPC networks and VM instances and test connectivity across networks.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32639921?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32639921?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-29602dc272dc25b87d80aad082aeac190a74d2ab.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="ed274100f465b2a7" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>VPC Networking</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32639921?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32639921?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32639921?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32639921?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32639921?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32639921?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32639921?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32639921?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32639921?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32639921?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32639921?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32639921?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32639921?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32639921?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32639921?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32639921?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32639921?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32639921?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32639921?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+—/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create a VPC network and VM instances
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create a VPC network and VM instances' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+</span>
+/ 30
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create custom mode VPC networks with firewall rules
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create custom mode VPC networks with firewall rules' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+</span>
+/ 40
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create VM instances
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create VM instances' step_no='3'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-3'>
+</span>
+/ 30
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;VPC Networking&quot;,&quot;lab_name&quot;:&quot;VPC Networking&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32639921' data-lab-billing-limit='0.0' data-lab-duration='5400' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:false}' labDetails='[]' labTimer='{&quot;ticking&quot;:false,&quot;secondsRemaining&quot;:5400}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+VPC Networking
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>1 hour 30 minutes</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32639921/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.5276'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>Google Cloud Virtual Private Cloud (VPC) provides networking functionality to Compute Engine virtual machine (VM) instances, Kubernetes Engine containers, and the App Engine flexible environment. In other words, without a VPC network, you cannot create VM instances, containers, or App Engine applications. Therefore, each Google Cloud project has a <strong>default</strong> network to get you started.</p>
+<p>You can think of a VPC network as similar to a physical network, except that it is virtualized within Google Cloud. A VPC network is a global resource that consists of a list of regional virtual subnetworks (subnets) in data centers, all connected by a global wide area network (WAN). VPC networks are logically isolated from each other in Google Cloud.</p>
+<p>In this lab, you create an auto mode VPC network with firewall rules and two VM instances. Then, you convert the auto mode network to a custom mode network and create other custom mode networks as shown in the example network diagram below. You also test connectivity across networks.</p>
+<p><img alt="VPC Networking Architecture diagram" src="https://cdn.qwiklabs.com/lX%2BlZ11ZdTwmfFe3Kwrh3uu3mWYFQwnS0LdcgBS70ng%3D"></p>
+<h3>Objectives</h3>
+<p>In this lab, you learn how to perform the following tasks:</p>
+<ul>
+<li>Explore the default VPC network</li>
+<li>Create an auto mode network with firewall rules</li>
+<li>Convert an auto mode network to a custom mode network</li>
+<li>Create custom mode VPC networks with firewall rules</li>
+<li>Create VM instances using Compute Engine</li>
+<li>Explore the connectivity for VM instances across VPC networks</li>
+</ul>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step2">Task 1. Explore the default network</h2>
+<p>Each Google Cloud project has a <strong>default</strong> network with subnets, routes, and firewall rules.</p>
+<h3><strong>View the subnets</strong></h3>
+<p>The <strong>default</strong> network has a subnet in each <a href="https://cloud.google.com/compute/docs/regions-zones/#available" target="_blank">Google Cloud region</a>.</p>
+<ul>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network</strong> &gt; <strong>VPC networks</strong>.</li>
+<li>Notice the <strong>default</strong> network with its subnets.<br>
+Each subnet is associated with a Google Cloud region and a private RFC 1918 CIDR block for its internal <b>IP addresses range</b> and a <b>gateway</b>.</li>
+</ul>
+<h3><strong>View the routes</strong></h3>
+<p>Routes tell VM instances and the VPC network how to send traffic from an instance to a destination, either inside the network or outside  Google Cloud. Each VPC network comes with some default routes to route traffic among its subnets and send traffic from eligible instances to the internet.</p>
+<ul>
+<li>In the left pane, click  <strong>Routes</strong>.<br>
+Notice that there is a route for each subnet and one for the <strong>Default internet gateway</strong> (0.0.0.0/0).<br>
+These routes are managed for you, but you can create custom static routes to direct some packets to specific destinations. For example, you can create a route that sends all outbound traffic to an instance configured as a NAT gateway.</li>
+</ul>
+<h3><strong>View the firewall rules</strong></h3>
+<p>Each VPC network implements a distributed virtual firewall that you can configure. Firewall rules allow you to control which packets are allowed to travel to which destinations. Every VPC network has two implied firewall rules that block all incoming connections and allow all outgoing connections.</p>
+<ul>
+<li>
+<p>In the left pane, click  <strong>Firewall</strong>.<br>
+Notice that there are 4 <strong>Ingress</strong> firewall rules for the <strong>default</strong> network:</p>
+<ul>
+<li>default-allow-icmp</li>
+<li>default-allow-rdp</li>
+<li>default-allow-ssh</li>
+<li>default-allow-internal</li>
+</ul>
+<p>These firewall rules allow <b>ICMP</b>, <b>RDP</b>, and <b>SSH</b> ingress traffic from anywhere (0.0.0.0/0) and all <b>TCP</b>, <b>UDP</b>, and <b>ICMP</b> traffic within the network (10.128.0.0/9). The <b>Targets</b>, <b>Filters</b>, <b>Protocols/ports</b>, and <b>Action</b> columns explain these rules.</p>
+</li>
+</ul>
+<h3><strong>Delete the Firewall rules</strong></h3>
+<ol>
+<li>In the left pane, click <strong>Firewall</strong>.</li>
+<li>Select all default network firewall rules.</li>
+<li>Click <strong>Delete</strong>.</li>
+<li>Click <strong>Delete</strong> to confirm the deletion of the firewall rules.</li>
+</ol>
+<h3><strong>Delete the default network</strong></h3>
+<ol>
+<li>In the left pane, click  <strong>VPC networks</strong>.</li>
+<li>Select the <strong>default</strong> network.</li>
+<li>Click <strong>Delete VPC network</strong>.</li>
+<li>Click <strong>Delete</strong> to confirm the deletion of the <strong>default</strong> network.</li>
+</ol>
+<p>Wait for the network to be deleted before continuing.</p>
+<ol start="5">
+<li>In the left pane, click  <strong>Routes</strong>.</li>
+</ol>
+<p>Notice that there are no routes.</p>
+<ol start="6">
+<li>In the left pane, click  <strong>Firewall</strong>.</li>
+</ol>
+<p>Notice that there are no firewall rules.</p>
+<ql-warningbox>
+<strong>Note: </strong>Without a VPC network, there are no routes!
+</ql-warningbox>
+<p><ql-true-false-probe answer="true" stem="Without a VPC network, you cannot create VM instances, containers, or App Engine applications.">
+</ql-true-false-probe></p>
+<h3><strong>Try to create a VM instance</strong></h3>
+<p>Verify that you cannot create a VM instance without a VPC network.</p>
+<ol>
+<li>On the <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.</li>
+<li>Click <strong>Create Instance</strong>.</li>
+<li>Accept the default values and click <strong>Create</strong>.</li>
+</ol>
+<p>Notice the error.</p>
+<ol start="4">
+<li>Click <strong>Create Instance</strong>.</li>
+<li>Click <strong>Advanced options</strong>.</li>
+<li>Click <strong>Networking</strong>.
+Notice the <strong>No more networks available</strong> error under <strong>Network interfaces</strong>.</li>
+<li>Click <strong>Cancel</strong>.</li>
+</ol>
+<ql-warningbox>
+<strong>Note: </strong>As expected, you cannot create a VM instance without a VPC network!
+</ql-warningbox>
+<h2 id="step3">Task 2. Create an auto mode network</h2>
+<p>You have been tasked to create an auto mode network with two VM instances. Auto mode networks are easy to set up and use because they automatically create subnets in each region. However, you don't have complete control over the subnets created in your VPC network, including regions and IP address ranges used.</p>
+<p>Feel free to explore in the Google VPC documentation for more <a href="https://cloud.google.com/vpc/docs/vpc#auto-mode-considerations" target="_blank">considerations for choosing an auto mode network</a>, but for now, assume that you are using the auto mode network for prototyping purposes.</p>
+<h3><strong>Create an auto mode VPC network with firewall rules</strong></h3>
+<ol>
+<li>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network</strong> &gt; <strong>VPC networks</strong>.</li>
+<li>Click <strong>Create VPC network</strong>.</li>
+<li>For <strong>Name</strong>, type <strong>mynetwork</strong>
+</li>
+<li>For <strong>Subnet creation mode</strong>, click <strong>Automatic</strong>.</li>
+</ol>
+<p>Auto mode networks create subnets in each region automatically.</p>
+<ol start="5">
+<li>For <strong>Firewall rules</strong>, select all available rules.</li>
+</ol>
+<p>These are the same standard firewall rules that the default network had. The <strong>deny-all-ingress</strong> and <strong>allow-all-egress</strong> rules are also displayed, but you cannot select or disable them because they are implied. These two rules have a lower <strong>Priority</strong> (higher integers indicate lower priorities) so that the allow ICMP, custom, RDP, and SSH rules are considered first.</p>
+<ol start="6">
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>When the new network is ready, click <strong>mynetwork</strong>. Note the IP address range for the subnets in <ql-variable key="project_0.default_region" placeholder="Lab Region"></ql-variable> and <code>europe-west1</code>.</p>
+</li>
+</ol>
+<ql-infobox>
+<strong>Note: </strong>If you ever delete the default network, you can quickly re-create it by creating an auto mode network as you just did.
+</ql-infobox>
+<h3><strong>Create a VM instance in <ql-variable key="project_0.default_region" placeholder="Lab Region"></ql-variable></strong></h3>
+<p>Create a VM instance in the <ql-variable key="project_0.default_region" placeholder="Lab Region"></ql-variable> region. Selecting a region and zone determines the subnet and assigns the internal IP address from the subnet's IP address range.</p>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Compute Engine</strong> &gt; <strong>VM instances</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create Instance</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults:</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td><code>mynet-us-vm</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><ql-variable key="project_0.default_region" placeholder="Lab Region"></ql-variable></td>
+</tr>
+<tr>
+<td>Zone</td>
+<td><ql-variable key="project_0.default_zone" placeholder="Lab Zone"></ql-variable></td>
+</tr>
+<tr>
+<td>Series</td>
+<td>E2</td>
+</tr>
+<tr>
+<td>Machine type</td>
+<td>e2-micro (2 vCPU, 1 GB memory)</td>
+</tr>
+<tr>
+<td>Boot disk</td>
+<td>Debian GNU/Linux 11 (bullseye)</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+</ol>
+<h3><strong>Create a VM instance in europe-west1</strong></h3>
+<p>Create a VM instance in the europe-west1 region.</p>
+<ol>
+<li>
+<p>Click <strong>Create instance</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults:</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td><code>mynet-eu-vm</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td>europe-west1</td>
+</tr>
+<tr>
+<td>Zone</td>
+<td>europe-west1-c</td>
+</tr>
+<tr>
+<td>Series</td>
+<td>E2</td>
+</tr>
+<tr>
+<td>Machine type</td>
+<td>e2-micro (2 vCPU, 1 GB memory)</td>
+</tr>
+<tr>
+<td>Boot disk</td>
+<td>Debian GNU/Linux 11 (bullseye)</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+</ol>
+<ql-infobox>
+<p><strong>Note: </strong>The <b>External IP addresses</b> for both VM instances are ephemeral. If an instance is stopped, any ephemeral external IP addresses assigned to the instance are released back into the general Compute Engine pool and become available for use by other projects. </p>
+When a stopped instance is started again, a new ephemeral external IP address is assigned to the instance. Alternatively, you can reserve a static external IP address, which assigns the address to your project indefinitely until you explicitly release it.
+</ql-infobox>
+<h3><strong>Verify connectivity for the VM instances</strong></h3>
+<p>The firewall rules that you created with <strong>mynetwork</strong> allow ingress SSH and ICMP traffic from within <strong>mynetwork</strong> (internal IP) and outside that network (external IP).</p>
+<ol>
+<li>On the <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.</li>
+</ol>
+<p>Note the external and internal IP addresses for <strong>mynet-eu-vm</strong>.</p>
+<ol start="2">
+<li>For <strong>mynet-us-vm</strong>, click <strong>SSH</strong> to launch a terminal and connect.</li>
+</ol>
+<ql-infobox>
+<strong>Note: </strong>You can SSH because of the <b>allow-ssh</b> firewall rule, which allows incoming traffic from anywhere (0.0.0.0/0) for <b>tcp:22</b>. The SSH connection works seamlessly because Compute Engine generates an SSH key for you and stores it in one of the following locations:
+
+<ul>
+<li>By default, Compute Engine adds the generated key to project or instance metadata.</li>
+<li>If your account is configured to use OS Login, Compute Engine stores the generated key with your user account.</li>
+</ul>
+
+Alternatively, you can control access to Linux instances by creating SSH keys and editing public SSH key metadata.
+</ql-infobox>
+<ol start="3">
+<li>To test connectivity to <strong>mynet-eu-vm</strong>'s internal IP, run the following command, replacing <strong>mynet-eu-vm</strong>'s internal IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter mynet-eu-vm's internal IP here&gt;
+</ql-code-block>
+<p>You can ping <strong>mynet-eu-vm</strong>'s internal IP because of the <strong>allow-custom</strong> firewall rule.</p>
+<ol start="4">
+<li>To test connectivity to <strong>mynet-eu-vm</strong>'s external IP, run the following command, replacing <strong>mynet-eu-vm</strong>'s external IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter mynet-eu-vm's external IP here&gt;
+</ql-code-block>
+<p><ql-multiple-choice-probe answerindex="0" optiontitles='[
+"mynetwork-allow-icmp",
+"mynetwork-allow-rdp",
+"mynetwork-allow-ssh",
+"mynetwork-allow-custom"
+]' shuffle="" stem="Which firewall rule allows the ping to mynet-eu-vm's external IP address?">
+</ql-multiple-choice-probe></p>
+<ql-infobox>
+<strong>Note: </strong>You can SSH to <b>mynet-us-vm</b> and ping <b>mynet-eu-vm</b>'s internal and external IP addresses as expected. Alternatively, you can SSH to <b>mynet-eu-vm</b> and ping <b>mynet-us-vm</b>'s internal and external IP addresses, which also works.
+</ql-infobox>
+<h3><strong>Convert the network to a custom mode network</strong></h3>
+<p>The auto mode network worked great so far, but you have been asked to convert it to a custom mode network so that new subnets aren't automatically created as new regions become available. This could result in overlap with IP addresses used by manually created subnets or static routes, or could interfere with your overall network planning.</p>
+<ol>
+<li>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network &gt; VPC networks</strong>.</li>
+<li>Click <strong>mynetwork</strong> to open the network details.</li>
+<li>Click <strong>Edit</strong>.</li>
+<li>Select <strong>Custom</strong> for the <strong>Subnet creation mode</strong>.</li>
+<li>Click <strong>Save</strong>.</li>
+<li>Return to the <strong>VPC networks</strong> page.</li>
+</ol>
+<p>Wait for the <strong>Mode</strong> of <strong>mynetwork</strong> to change to <strong>Custom</strong>.</p>
+<p>You can click <strong>Refresh</strong> while you wait.</p>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="1">
+Create a VPC network and VM instances
+</ql-activity-tracking></p>
+<ql-infobox>
+<strong>Note: </strong>Converting an auto mode network to a custom mode network is an easy task, and it provides you with more flexibility. We recommend that you use custom mode networks in production.
+</ql-infobox>
+<h2 id="step4">Task 3. Create custom mode networks</h2>
+<p>You have been tasked to create two additional custom networks, <strong>managementnet</strong> and <strong>privatenet</strong>, along with firewall rules to allow <strong>SSH</strong>, <strong>ICMP</strong>, and <strong>RDP</strong> ingress traffic and VM instances as shown in this example diagram (with the exception of vm-appliance):</p>
+<p><img alt="VPC Networking Architecture diagram" src="https://cdn.qwiklabs.com/lX%2BlZ11ZdTwmfFe3Kwrh3uu3mWYFQwnS0LdcgBS70ng%3D"></p>
+<p>Note that the IP CIDR ranges of these networks do not overlap. This allows you to set up mechanisms such as VPC peering between the networks. If you specify IP CIDR ranges that are different from your on-premises network, you could even configure hybrid connectivity using VPN or Cloud Interconnect.</p>
+<h3><strong>Create the managementnet network</strong></h3>
+<p>Create the <strong>managementnet</strong> network using the Cloud Console.</p>
+<ol>
+<li>
+<p>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network &gt; VPC networks</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create VPC Network</strong>.</p>
+</li>
+<li>
+<p>For  <strong>Name</strong>, type <strong>managementnet</strong></p>
+</li>
+<li>
+<p>For <strong>Subnet creation mode</strong>, click <strong>Custom</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults:</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td><code>managementsubnet-us</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><ql-variable key="project_0.default_region" placeholder="Lab Region"></ql-variable></td>
+</tr>
+<tr>
+<td>IPv4 range</td>
+<td><code>10.240.0.0/20</code></td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Done</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Equivalent Command line</strong>.</p>
+<p>These commands illustrate that networks and subnets can be created using the <code>gcloud</code> command line. You will create the <strong>privatenet</strong> network using these commands with similar parameters.</p>
+</li>
+<li>
+<p>Click <strong>Close</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+</ol>
+<h3><strong>Create the privatenet network</strong></h3>
+<p>Create the <strong>privatenet</strong> network using the <code>gcloud</code> command line.</p>
+<ol>
+<li>In the Cloud Console, click <strong>Activate Cloud Shell</strong> (<img alt="Acitvate Cloud Shell icon" src="https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D" title="Cloud Shell">).</li>
+<li>If prompted, click <strong>Continue</strong>.</li>
+<li>To create the  <strong>privatenet</strong> network, run the following command.    Click <strong>Authorize</strong> if prompted.</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute networks create privatenet --subnet-mode=custom
+</ql-code-block>
+<ol start="4">
+<li>To create the  <strong>privatesubnet-us</strong> subnet, run the following command:</li>
+</ol>
+<ql-code-block language="text" templated="">
+gcloud compute networks subnets create privatesubnet-us --network=privatenet --region={{{project_0.default_region|Lab region}}} --range=172.16.0.0/24
+</ql-code-block>
+<ol start="5">
+<li>To create the  <strong>privatesubnet-eu</strong> subnet, run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute networks subnets create privatesubnet-eu --network=privatenet --region=europe-west1 --range=172.20.0.0/20
+</ql-code-block>
+<ol start="6">
+<li>To list the available VPC networks, run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute networks list
+</ql-code-block>
+<p>The output should look like this:</p>
+<ql-code-block output="">
+
+NAME           SUBNET_MODE  BGP_ROUTING_MODE  IPV4_RANGE  GATEWAY_IPV4
+managementnet  CUSTOM       REGIONAL
+mynetwork      CUSTOM       REGIONAL
+privatenet     CUSTOM       REGIONAL
+</ql-code-block>
+<ol start="7">
+<li>To list the available VPC subnets (sorted by VPC network), run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute networks subnets list --sort-by=NETWORK
+</ql-code-block>
+<ql-infobox>
+<strong>Note: </strong>The <b>managementnet</b> and <b>privatenet</b> networks only have the subnets that you created because they are custom mode networks. <b>mynetwork</b> is also a custom mode network, but it started out as an auto mode network, resulting in subnets in each region.
+</ql-infobox>
+<ol start="8">
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network &gt; VPC networks</strong>.<br>
+Verify that the same networks and subnets are listed in the Cloud Console.</li>
+</ol>
+<h3><strong>Create the firewall rules for managementnet</strong></h3>
+<p>Create firewall rules to allow <strong>SSH</strong>, <strong>ICMP</strong>, and <strong>RDP</strong> ingress traffic to VM instances on the <strong>managementnet</strong> network.</p>
+<ol>
+<li>
+<p>In the Cloud Console, on the  <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network &gt; Firewall</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create Firewall Rule</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults:</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td><code>managementnet-allow-icmp-ssh-rdp</code></td>
+</tr>
+<tr>
+<td>Network</td>
+<td>managementnet</td>
+</tr>
+<tr>
+<td>Targets</td>
+<td>All instances in the network</td>
+</tr>
+<tr>
+<td>Source filter</td>
+<td>IPv4 Ranges</td>
+</tr>
+<tr>
+<td>Source IPv4 ranges</td>
+<td><code>0.0.0.0/0</code></td>
+</tr>
+<tr>
+<td>Protocols and ports</td>
+<td>Specified protocols and ports</td>
+</tr>
+
+</table>
+</li>
+</ol>
+<ql-infobox>
+<strong>Note: </strong>Make sure to include the <strong>/0</strong> in the <strong>Source IPv4 ranges</strong> to specify all networks.
+</ql-infobox>
+<ol start="4">
+<li>
+<p>Select <strong>tcp</strong> and specify ports <strong>22</strong> and <strong>3389</strong>.</p>
+</li>
+<li>
+<p>Select <strong>Other protocols</strong> and specify <strong>icmp</strong> protocol.</p>
+</li>
+<li>
+<p>Click <strong>Equivalent Command line</strong>.</p>
+<p>These commands illustrate that firewall rules can also be created using the <code>gcloud</code> command line. You will create the <strong>privatenet</strong>'s firewall rules using these commands with similar parameters.</p>
+</li>
+<li>
+<p>Click <strong>Close</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+</ol>
+<h3><strong>Create the firewall rules for privatenet</strong></h3>
+<p>Create the firewall rules for <strong>privatenet</strong> network using the <code>gcloud</code> command line.</p>
+<ol>
+<li>Return to <strong>Cloud Shell</strong>. If necessary, click <strong>Activate Cloud Shell</strong> (<img alt="Activate Cloud Shell icon" src="https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D" title="Cloud Shell">).</li>
+<li>To create the <strong>privatenet-allow-icmp-ssh-rdp</strong> firewall rule, run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute firewall-rules create privatenet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=privatenet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+</ql-code-block>
+<p>The output should look like this:</p>
+<ql-code-block output="">
+
+NAME                           NETWORK     DIRECTION  PRIORITY  ALLOW                 DENY
+privatenet-allow-icmp-ssh-rdp  privatenet  INGRESS    1000      icmp,tcp:22,tcp:3389
+</ql-code-block>
+<ol start="3">
+<li>To list all the firewall rules (sorted by VPC network), run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute firewall-rules list --sort-by=NETWORK
+</ql-code-block>
+<p>The output should look like this:</p>
+<ql-code-block output="">
+
+NAME                              NETWORK        DIRECTION  PRIORITY  ALLOW                        
+managementnet-allow-icmp-ssh-rdp  managementnet  INGRESS    1000      icmp,tcp:22,tcp:3389
+mynetwork-allow-icmp              mynetwork      INGRESS    1000      icmp
+mynetwork-allow-custom            mynetwork      INGRESS    65534     all                         
+mynetwork-allow-rdp               mynetwork      INGRESS    1000      tcp:3389
+mynetwork-allow-ssh               mynetwork      INGRESS    1000      tcp:22
+privatenet-allow-icmp-ssh-rdp     privatenet     INGRESS    1000      icmp,tcp:22,tcp:3389
+</ql-code-block>
+<p>The firewall rules for <strong>mynetwork</strong> network have been created for you. You can define multiple protocols and ports in one firewall rule (<strong>privatenet</strong> and <strong>managementnet</strong>) or spread them across multiple rules (<strong>default</strong> and <strong>mynetwork</strong>).</p>
+<ol start="4">
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network &gt; Firewall</strong>.<br>
+Verify that the same firewall rules are listed in the Cloud Console.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="2">
+Create custom mode VPC networks with firewall rules
+</ql-activity-tracking></p>
+<p>Next, create two VM instances:</p>
+<ul>
+<li>
+<strong>managementnet-us-vm</strong> in <strong>managementsubnet-us</strong>
+</li>
+<li>
+<strong>privatenet-us-vm</strong> in <strong>privatesubnet-us</strong>
+</li>
+</ul>
+<h3><strong>Create the managementnet-us-vm instance</strong></h3>
+<p>Create the <strong>managementnet-us-vm</strong> instance using the Cloud Console.</p>
+<ol>
+<li>
+<p>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Compute Engine &gt; VM instances</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create instance</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults:</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td><code>managementnet-us-vm</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><ql-variable key="project_0.default_region" placeholder="Lab Region"></ql-variable></td>
+</tr>
+<tr>
+<td>Zone</td>
+<td><ql-variable key="project_0.default_zone" placeholder="Lab Zone"></ql-variable></td>
+</tr>
+<tr>
+<td>Series</td>
+<td>E2</td>
+</tr>
+<tr>
+<td>Machine type</td>
+<td>e2-micro (2 vCPU, 1 GB memory)</td>
+</tr>
+<tr>
+<td>Boot disk</td>
+<td>Debian GNU/Linux 11 (bullseye)</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Advanced options</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Networking</strong>.</p>
+</li>
+<li>
+<p>For <strong>Network interfaces</strong>, click the dropdown arrow to edit.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults:</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Network</td>
+<td>managementnet</td>
+</tr>
+<tr>
+<td>Subnetwork</td>
+<td>managementsubnet-us</td>
+</tr>
+
+</table>
+</li>
+</ol>
+<ql-infobox>
+<strong>Note: </strong>The subnets available for selection are restricted to those in the selected region.
+</ql-infobox>
+<ol start="8">
+<li>
+<p>Click <strong>Done</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Equivalent Code</strong>.</p>
+<p>This illustrates that VM instances can also be created using the <code>gcloud</code> command line. You will create the <strong>privatenet-us-vm</strong> instance using these commands with similar parameters.</p>
+</li>
+<li>
+<p>Click <strong>Close</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+</ol>
+<h3><strong>Create the privatenet-us-vm instance</strong></h3>
+<p>Create the <strong>privatenet-us-vm</strong> instance using the <code>gcloud</code> command line.</p>
+<ol>
+<li>Return to <strong>Cloud Shell</strong>. If necessary, click <strong>Activate Cloud Shell</strong> (<img alt="Activate Cloud Shell icon" src="https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D" title="Cloud Shell">).</li>
+<li>To create the <strong>privatenet-us-vm</strong> instance, run the following command:</li>
+</ol>
+<ql-code-block language="text" templated="">
+gcloud compute instances create privatenet-us-vm --zone={{{project_0.default_zone|Lab Zone}}} --machine-type=e2-micro --subnet=privatesubnet-us --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=privatenet-us-vm
+</ql-code-block>
+<ol start="3">
+<li>To list all the VM instances (sorted by zone), run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud compute instances list --sort-by=ZONE
+</ql-code-block>
+<ol start="4">
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Compute Engine &gt; VM instances</strong>.</li>
+</ol>
+<p>Verify that the VM instances are listed in the Cloud Console.</p>
+<ol start="5">
+<li>
+<p>For <strong>Columns</strong>, select <strong>Zone</strong>.</p>
+<p>There are three instances in <strong><ql-variable key="project_0.default_zone" placeholder="Lab Zone"></ql-variable></strong> and one instance in <strong>europe-west1-c</strong>. However, these instances are spread across three VPC networks (<strong>managementnet</strong>, <strong>mynetwork</strong>, and <strong>privatenet</strong>), with no instance in the same zone and network as another. In the next task, you explore the effect this has on internal connectivity.</p>
+</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="3">
+Create VM instances
+</ql-activity-tracking></p>
+<ql-infobox>
+<strong>Note: </strong>You can explore more networking information on each VM instance by clicking the <b>nic0</b> link in the <b>Internal IP</b> column. The resulting network interface details page shows the subnet along with the IP CIDR range, the firewall rules and routes that apply to the instance, and other network analysis.
+</ql-infobox>
+<h2 id="step5">Task 4. Explore the connectivity across networks</h2>
+<p>Explore the connectivity between the VM instances. Specifically, determine the effect of having VM instances in the same zone versus having instances in the same VPC network.</p>
+<h3><strong>Ping the external IP addresses</strong></h3>
+<p>Ping the external IP addresses of the VM instances to determine whether you can reach the instances from the public internet.</p>
+<ol>
+<li>In the Cloud Console, on the  <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.<br>
+Note the external IP addresses for <strong>mynet-eu-vm</strong>, <strong>managementnet-us-vm</strong>, and <strong>privatenet-us-vm</strong>.</li>
+<li>For <strong>mynet-us-vm</strong>, click <strong>SSH</strong> to launch a terminal and connect.</li>
+<li>To test connectivity to <strong>mynet-eu-vm</strong>'s external IP, run the following command, replacing <strong>mynet-eu-vm</strong>'s external IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter mynet-eu-vm's external IP here&gt;
+</ql-code-block>
+<p>This should work!</p>
+<ol start="4">
+<li>To test connectivity to <strong>managementnet-us-vm</strong>'s external IP, run the following command, replacing <strong>managementnet-us-vm</strong>'s external IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter managementnet-us-vm's external IP here&gt;
+</ql-code-block>
+<p>This should work!</p>
+<ol start="5">
+<li>To test connectivity to <strong>privatenet-us-vm</strong>'s external IP, run the following command, replacing <strong>privatenet-us-vm</strong>'s external IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter privatenet-us-vm's external IP here&gt;
+</ql-code-block>
+<p>This should work!</p>
+<ql-infobox>
+<strong>Note: </strong>You can ping the external IP address of all VM instances, even though they are in either a different zone or VPC network. This confirms that public access to those instances is only controlled by the <b>ICMP</b> firewall rules that you established earlier.
+</ql-infobox>
+<h3><strong>Ping the internal IP addresses</strong></h3>
+<p>Ping the internal IP addresses of the VM instances to determine whether you can reach the instances from within a VPC network.</p>
+<p><ql-multiple-select-probe answerindices="[0]" optiontitles='[
+"mynet-eu-vm",
+"managementnet-us-vm",
+"privatenet-us-vm"
+]' shuffle="" stem="Which instances should you be able to ping from mynet-us-vm using internal IP addresses?">
+</ql-multiple-select-probe></p>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.<br>
+Note the internal IP addresses for <strong>mynet-eu-vm</strong>, <strong>managementnet-us-vm</strong>, and <strong>privatenet-us-vm</strong>.</li>
+<li>Return to the <strong>SSH</strong> terminal for <strong>mynet-us-vm</strong>.</li>
+<li>To test connectivity to <strong>mynet-eu-vm</strong>'s internal IP, run the following command, replacing <strong>mynet-eu-vm</strong>'s internal IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter mynet-eu-vm's internal IP here&gt;
+</ql-code-block>
+<ql-infobox>
+<strong>Note: </strong>You can ping the internal IP address of <b>mynet-eu-vm</b> because it is on the same VPC network as the source of the ping (<b>mynet-us-vm</b>), even though both VM instances are in separate zones, regions, and continents!
+</ql-infobox>
+<ol start="4">
+<li>To test connectivity to <strong>managementnet-us-vm</strong>'s internal IP, run the following command, replacing <strong>managementnet-us-vm</strong>'s internal IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter managementnet-us-vm's internal IP here&gt;
+</ql-code-block>
+<ql-warningbox>
+<strong>Note: </strong>This should not work, as indicated by a 100% packet loss!
+</ql-warningbox>
+<ol start="5">
+<li>To test connectivity to <strong>privatenet-us-vm</strong>'s internal IP, run the following command, replacing <strong>privatenet-us-vm</strong>'s internal IP:</li>
+</ol>
+<ql-code-block language="plaintext">
+ping -c 3 &lt;Enter privatenet-us-vm's internal IP here&gt;
+</ql-code-block>
+<ql-warningbox>
+<strong>Note: </strong>This should not work either, as indicated by a 100% packet loss! You cannot ping the internal IP address of <b>managementnet-us-vm</b> and <b>privatenet-us-vm</b> because they are in separate VPC networks from the source of the ping (<b>mynet-us-vm</b>), even though they are all in the same zone.
+</ql-warningbox>
+<h2 id="step6">Task 5. Review</h2>
+<p>In this lab, you explored the default network and determined that you cannot create VM instances without a VPC network. Thus, you created a new auto mode VPC network with subnets, routes, firewall rules, and two VM instances and tested the connectivity for the VM instances. Because auto mode networks aren't recommended for production, you converted the auto mode network to a custom mode network.</p>
+<p>Next, you created two more custom mode VPC networks with firewall rules and VM instances using the Cloud Console and the gcloud command line. Then you tested the connectivity across VPC networks, which worked when pinging external IP addresses but not when pinging internal IP addresses.</p>
+<p>VPC networks are by default isolated private networking domains. Therefore, no internal IP address communication is allowed between networks, unless you set up mechanisms such as VPC peering or VPN.</p>
+<h2 id="step7">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Task 1. Explore the default network</a></li><li><a href="#step3">Task 2. Create an auto mode network</a></li><li><a href="#step4">Task 3. Create custom mode networks</a></li><li><a href="#step5">Task 4. Explore the connectivity across networks</a></li><li><a href="#step6">Task 5. Review</a></li><li><a href="#step7">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab, you create several VPC networks and VM instances and test connectivity across networks.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+90m access
+&middot;
+45m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/2043">https://googlecoursera.qwiklabs.com/catalog_lab/2043</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="2043" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

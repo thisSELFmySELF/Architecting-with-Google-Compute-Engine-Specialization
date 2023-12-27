@@ -1,0 +1,993 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Building a DevOps Pipeline | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-383ac8dce987ca8ef68702cd64980b76aa83af6d.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="kYOWgdojpYUmvjAqNVYYC8bmVFP/51yeKMsaxtilhBpCmb0Bh4IOxyerrY5Ahb8vM/E5FWqX9qT75AxKu74X2w==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;alexandria_show_bundle_errors&quot;,&quot;program_announcements&quot;,&quot;canonical_domain_redirect&quot;,&quot;program_learning_assignment&quot;,&quot;barker&quot;,&quot;used_in&quot;,&quot;course_upgrade&quot;,&quot;community_forum&quot;,&quot;peer_assignment&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;teams&quot;,&quot;content_provider_admin&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab, you will build a continuous integration pipeline using Cloud Source Repositories, Cloud Build, Build Triggers and Container Registry.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Building a DevOps Pipeline | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab, you will build a continuous integration pipeline using Cloud Source Repositories, Cloud Build, Build Triggers and Container Registry.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32596643?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32596643?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-29602dc272dc25b87d80aad082aeac190a74d2ab.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="a7c9d7520bd80731" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Building a DevOps Pipeline</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32596643?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32596643?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32596643?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32596643?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32596643?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32596643?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32596643?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32596643?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32596643?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32596643?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32596643?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32596643?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32596643?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32596643?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32596643?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32596643?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32596643?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32596643?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32596643?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+100/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create a git repository
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create a git repository' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Manage Docker images with Cloud Build and Artifact Registry
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Manage Docker images with Cloud Build and Artifact Registry' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Automate Builds with Trigger
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Automate Builds with Trigger' step_no='3'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-3'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Test your Build Changes
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Test your Build Changes' step_no='4'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-4'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Building a DevOps Pipeline&quot;,&quot;lab_name&quot;:&quot;Building a DevOps Pipeline&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32596643' data-lab-billing-limit='0.0' data-lab-duration='7200' data-lab-instance-id='83158884' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:true}' labDetails='[{&quot;text&quot;:&quot;Open Google Cloud console&quot;,&quot;property&quot;:&quot;console_url&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;href&quot;:&quot;https://accounts.google.com/AddSession?service=accountsettings\u0026sarp=1\u0026continue=https%3A%2F%2Fconsole.cloud.google.com%2Fhome%2Fdashboard%3Fproject%3Dqwiklabs-gcp-01-4f6fb6899d27#Email=student-04-20376c28f274@qwiklabs.net&quot;,&quot;type&quot;:&quot;button&quot;},{&quot;label&quot;:&quot;Username&quot;,&quot;property&quot;:&quot;username&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;student-04-20376c28f274@qwiklabs.net&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Password&quot;,&quot;property&quot;:&quot;password&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;He1aVKrPZlts&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Project ID&quot;,&quot;property&quot;:&quot;project_id&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;value&quot;:&quot;qwiklabs-gcp-01-4f6fb6899d27&quot;,&quot;type&quot;:&quot;credential&quot;}]' labTimer='{&quot;ticking&quot;:true,&quot;secondsRemaining&quot;:5304}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Building a DevOps Pipeline
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>2 hours</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32596643/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.4315'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>In this lab, you will build a continuous integration pipeline using Cloud Source Repositories, Cloud Build, build triggers, and Artifact Registry.</p>
+<p><img alt="Continuous integration pipeline architecture" src="https://cdn.qwiklabs.com/K6AxXI6Pn59dCySH0XsAMKmqU9MlAHTPnuekPGr1wls%3D"></p>
+<h2 id="step2">Objectives</h2>
+<p>In this lab, you will learn how to perform the following tasks:</p>
+<ul>
+<li>Create a Git repository</li>
+<li>Create a simple Python application</li>
+<li>Test Your web application in Cloud Shell</li>
+<li>Define a Docker build</li>
+<li>Manage Docker images with Cloud Build and Artifact Registry</li>
+<li>Automate builds with triggers</li>
+<li>Test your build changes</li>
+</ul>
+<h2 id="step3">Set up your lab environment</h2>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step4">Task 1. Create a Git repository</h2>
+<p>First, you will create a Git repository using the Cloud Source Repositories service in Google Cloud. This Git repository will be used to store your source code. Eventually, you will create a build trigger that starts a continuous integration pipeline when code is pushed to it.</p>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong>, click <strong>Source Repositories</strong>. A new tab will open.</li>
+<li>Click <strong>Add repository</strong>.</li>
+<li>Select <strong>Create new repository</strong> and click <strong>Continue</strong>.</li>
+<li>Name the repository <strong>devops-repo</strong>.</li>
+<li>Select your current project ID from the list.</li>
+<li>Click <strong>Create</strong>.</li>
+<li>Return to the Cloud Console, and click <strong>Activate Cloud Shell</strong> (<img alt="Cloud Shell icon" src="https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D" title="Cloud Shell">).</li>
+<li>If prompted, click <strong>Continue</strong>.</li>
+<li>Enter the following command in Cloud Shell to create a folder called <code>gcp-course</code>:</li>
+</ol>
+<ql-code-block language="bash">
+mkdir gcp-course
+</ql-code-block>
+<ol start="10">
+<li>Change to the folder you just created:</li>
+</ol>
+<ql-code-block language="bash">
+cd gcp-course
+</ql-code-block>
+<ol start="11">
+<li>Now clone the empty repository you just created:</li>
+</ol>
+<ql-code-block language="bash">
+gcloud source repos clone devops-repo
+</ql-code-block>
+<ql-warningbox><strong>Note: </strong>You will see a warning that you have cloned an empty repository. That is expected at this point.</ql-warningbox>
+<ol start="12">
+<li>The previous command created an empty folder called <code>devops-repo</code>.  Change to that folder:</li>
+</ol>
+<ql-code-block language="bash">
+cd devops-repo
+</ql-code-block>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="1">
+Create a git repository.
+</ql-activity-tracking></p>
+<h2 id="step5">Task 2. Create a simple Python application</h2>
+<p>You need some source code to manage. So, you will create a simple Python Flask web application. The application will be only slightly better than "hello world", but it will be good enough to test the pipeline you will build.</p>
+<ol>
+<li>In Cloud Shell, click <strong>Open Editor</strong> (<img alt="Editor icon" src="https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D">) to open the code editor. If prompted click <strong>Open in a new window</strong>.</li>
+<li>Select the <strong>gcp-course &gt; devops-repo</strong> folder in the explorer tree on the left.</li>
+<li>Click on <strong>devops-repo</strong>
+</li>
+<li>On the <strong>File menu</strong>, click <strong>New File</strong>
+</li>
+<li>Paste the following code into the file you just created:</li>
+</ol>
+<ql-code-block language="bash">
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route("/")
+def main():
+    model = {"title": "Hello DevOps Fans."}
+    return render_template('index.html', model=model)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080, debug=True, threaded=True)
+</ql-code-block>
+<ol start="6">
+<li>To save your changes. Press <em><em>CTRL + S</em>,</em>  and name the file as <code>main.py</code>.</li>
+<li>Click on <strong>SAVE</strong>
+</li>
+<li>Click on the <code>devops-repo</code> folder.</li>
+<li>Click on the <strong>File menu</strong>, click <strong>New Folder</strong>, Enter folder name as <code>templates</code>.</li>
+<li>Click <strong>OK</strong>
+</li>
+<li>Right-click on the <code>templates</code> folder and create a new file called <code>layout.html</code>.</li>
+<li>Add the following code and save the file as you did before:</li>
+</ol>
+<ql-code-block language="bash">
+&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;{{model.title}}&lt;/title&gt;
+    &lt;!-- Bootstrap CSS --&gt;
+    &lt;link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;
+
+        {% block content %}{% endblock %}
+
+        &lt;footer&gt;&lt;/footer&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</ql-code-block>
+<ol start="12">
+<li>
+<p>Also in the templates folder, add another new file called <code>index.html</code>.</p>
+</li>
+<li>
+<p>Add the following code and save the file as you did before:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+{% extends "layout.html" %}
+{% block content %}
+&lt;div class="jumbotron"&gt;
+    &lt;div class="container"&gt;
+        &lt;h1&gt;{{model.title}}&lt;/h1&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}
+</ql-code-block>
+<ol start="14">
+<li>
+<p>In Python, application prerequisites are managed using pip. Now you will add a file that lists the requirements for this application.</p>
+</li>
+<li>
+<p>In the <strong>devops-repo</strong> folder (<em>not the templates folder</em>), create a <strong>New File</strong> and add the following to that file and save it as <code>requirements.txt</code>:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+Flask&gt;=2.0.3
+</ql-code-block>
+<ol start="16">
+<li>You have some files now, so save them to the repository. First, you need to add all the files you created to your local Git repo. In Cloud Shell, enter the following code:</li>
+</ol>
+<ql-code-block language="bash">
+cd ~/gcp-course/devops-repo
+git add --all
+</ql-code-block>
+<ol start="17">
+<li>To commit changes to the repository, you have to identify yourself. Enter the following commands, but with your information (<em>you can just use your Gmail address or any other email address</em>):</li>
+</ol>
+<ql-code-block language="bash">
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+</ql-code-block>
+<ol start="18">
+<li>Now, commit the changes locally:</li>
+</ol>
+<ql-code-block language="bash">
+git commit -a -m "Initial Commit"
+</ql-code-block>
+<ol start="19">
+<li>You committed the changes locally, but have not updated the Git repository you created in Cloud Source Repositories. Enter the following command to push your changes to the cloud:</li>
+</ol>
+<ql-code-block language="bash">
+git push origin master
+</ql-code-block>
+<ol start="20">
+<li>Refresh the <strong>Source Repositories</strong> web page. You should see the files you just created.</li>
+</ol>
+<h2 id="step6">Task 3. Define a Docker build</h2>
+<p>The first step to using Docker is to create a file called <strong>Dockerfile</strong>. This file defines how a Docker container is constructed. You will do that now.</p>
+<ol>
+<li>In the Cloud Shell Code Editor, expand the <strong>gcp-course/devops-repo</strong> folder. With the <strong>devops-repo</strong> folder selected, on the <strong>File</strong> menu, click <strong>New File</strong> and name the new file <strong>Dockerfile</strong>.</li>
+</ol>
+<p>The file <em>Dockerfile</em> is used to define how the container is built.</p>
+<ol start="2">
+<li>At the top of the file, enter the following:</li>
+</ol>
+<ql-code-block language="bash">
+FROM python:3.9
+</ql-code-block>
+<p>This is the base image. You could choose many base images. In this case, you are using one with Python already installed on it.</p>
+<ol start="3">
+<li>Enter the following:</li>
+</ol>
+<ql-code-block language="bash">
+WORKDIR /app
+COPY . .
+</ql-code-block>
+<p>These lines copy the source code from the current folder into the /app folder in the container image.</p>
+<ol start="4">
+<li>Enter the following:</li>
+</ol>
+<ql-code-block language="bash">
+RUN pip install gunicorn
+RUN pip install -r requirements.txt
+</ql-code-block>
+<p>This uses pip to install the requirements of the Python application into the container. Gunicorn is a Python web server that will be used to run the web app.</p>
+<ol start="5">
+<li>Enter the following:</li>
+</ol>
+<ql-code-block language="bash">
+ENV PORT=80
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
+</ql-code-block>
+<p>The environment variable sets the port that the application will run on (in this case, 80). The last line runs the web app using the gunicorn web server.</p>
+<ol start="6">
+<li>Verify that the completed file looks as follows and save it:</li>
+</ol>
+<ql-code-block language="bash">
+FROM python:3.9
+WORKDIR /app
+COPY . .
+RUN pip install gunicorn
+RUN pip install -r requirements.txt
+ENV PORT=80
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
+</ql-code-block>
+<h2 id="step7">Task 4. Manage Docker images with Cloud Build and Artifact Registry</h2>
+<p>The Docker image has to be built and then stored somewhere. You will use <strong>Cloud Build</strong> and <strong>Artifact Registry</strong>.</p>
+<ol>
+<li>Return to Cloud Shell. Make sure you are in the right folder:</li>
+</ol>
+<ql-code-block language="bash">
+cd ~/gcp-course/devops-repo
+</ql-code-block>
+<ol start="2">
+<li>The Cloud Shell environment variable DEVSHELL_PROJECT_ID automatically has your current project ID stored. The project ID is required to store images in Artifact Registry. Enter the following command to view your project ID:</li>
+</ol>
+<ql-code-block language="bash">
+echo $DEVSHELL_PROJECT_ID
+</ql-code-block>
+<ol start="3">
+<li>Enter the following command to create an Artifact Registry repository named devops-repo:</li>
+</ol>
+<ql-code-block> 
+gcloud artifacts repositories create devops-repo \
+    --repository-format=docker \
+    --location=us-central1
+</ql-code-block>
+<ol start="4">
+<li>To configure Docker to authenticate to the Artifact Registry Docker repository, enter the following command:</li>
+</ol>
+<ql-code-block>
+gcloud auth configure-docker us-central1-docker.pkg.dev
+</ql-code-block>
+<ol start="5">
+<li>To use Cloud Build to create the image and store it in Artifact Registry, type the following command:</li>
+</ol>
+<ql-code-block> 
+gcloud builds submit --tag us-central1-docker.pkg.dev/$DEVSHELL_PROJECT_ID/devops-repo/devops-image:v0.1 .
+</ql-code-block>
+<p><em>Notice the environment variable in the command</em>. The image will be stored in Artifact Registry.</p>
+<ol start="6">
+<li>
+<p>Return to the <strong>Cloud Console</strong> and on the <strong>Navigation menu</strong> ( <img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>Artifact Registry</strong> and then click <strong>devops-repo</strong>.</p>
+</li>
+<li>
+<p>Click <strong>devops-image</strong>. Your image should be listed.</p>
+</li>
+<li>
+<p>Now navigate to the <strong>Cloud Build</strong> service, and your build should be listed in the history.</p>
+</li>
+</ol>
+<p>You will now try running this image from a Compute Engine virtual machine.</p>
+<ol start="9">
+<li>
+<p>Navigate to the <strong>Compute Engine</strong> service.</p>
+</li>
+<li>
+<p>Click <strong>Create Instance</strong> to create a VM.</p>
+</li>
+<li>
+<p>On the <strong>Create an instance</strong> page, specify the following, and leave the remaining settings as their defaults:</p>
+</li>
+</ol>
+<table>
+
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+
+
+<tr>
+<td><strong>Container</strong></td>
+<td>Click DEPLOY CONTAINER</td>
+</tr>
+<tr>
+<td><strong>Container image</strong></td>
+<td>
+<code>us-central1-docker.pkg.dev/&lt;insert-your-project-id-here&gt;/devops-repo/devops-image:v0.1</code> (change the project ID where indicated) and click SELECT</td>
+</tr>
+<tr>
+<td><strong>Firewall</strong></td>
+<td>Allow HTTP traffic</td>
+</tr>
+
+</table>
+<ol start="12">
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>Once the VM starts, click the VM's external IP address. A browser tab opens and the page displays <code>Hello DevOps Fans.</code></p>
+</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>You might have to wait a minute or so after the VM is created for the Docker container to start.</ql-warningbox>
+<ol start="14">
+<li>You will now save your changes to your Git repository. In Cloud Shell, enter the following to make sure you are in the right folder and add your new Dockerfile to Git:</li>
+</ol>
+<ql-code-block language="bash">
+cd ~/gcp-course/devops-repo
+git add --all
+</ql-code-block>
+<ol start="15">
+<li>Commit your changes locally:</li>
+</ol>
+<ql-code-block language="bash">
+git commit -am "Added Docker Support"
+</ql-code-block>
+<ol start="16">
+<li>Push your changes to Cloud Source Repositories:</li>
+</ol>
+<ql-code-block language="bash">
+git push origin master
+</ql-code-block>
+<ol start="17">
+<li>Return to Cloud Source Repositories and verify that your changes were added to source control.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="2">
+Manage Docker images with Cloud Build and Artifact Registry.
+</ql-activity-tracking></p>
+<h2 id="step8">Task 5. Automate builds with triggers</h2>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong>, click <strong>Cloud Build</strong>. The <strong>Build history</strong> page should open, and one or more builds should be in your history.</p>
+</li>
+<li>
+<p>Click the <strong>Triggers</strong> link on the left.</p>
+</li>
+<li>
+<p>Click <strong>Create trigger</strong> and specify the following:</p>
+</li>
+</ol>
+<table>
+
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+
+
+<tr>
+<td><strong>Name</strong></td>
+<td>devops-trigger</td>
+</tr>
+<tr>
+<td><strong>Repository</strong></td>
+<td>devops-repo(Cloud Source Repositories)</td>
+</tr>
+<tr>
+<td><strong>Branch</strong></td>
+<td>.*(any branch)</td>
+</tr>
+<tr>
+<td><strong>Configuration</strong></td>
+<td>Dockerfile</td>
+</tr>
+<tr>
+<td><strong>Image name</strong></td>
+<td>
+<code>us-central1-docker.pkg.dev/&lt;insert-your-project-id-here&gt;/devops-repo/devops-image:$COMMIT_SHA</code> (change the project ID where indicated)</td>
+</tr>
+
+</table>
+<ol start="4">
+<li>
+<p>Accept the rest of the defaults, and click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>To test the trigger, click <strong>Run</strong> and then <strong>Run trigger</strong>.</p>
+</li>
+<li>
+<p>Click the <strong>History</strong> link and you should see a build running. Wait for the build to finish, and then click the link to it to see its details.</p>
+</li>
+<li>
+<p>Scroll down and look at the logs. The output of the build here is what you would have seen if you were running it on your machine.</p>
+</li>
+<li>
+<p>Return to the Artifact Registry service. You should see a new image in the <strong>devops-repo</strong> &gt; <strong>devops-image</strong> folder.</p>
+</li>
+<li>
+<p>Return to the <strong>Cloud Shell Code Editor</strong>. Find the file <code>main.py</code> in the <code>gcp-course/devops-repo</code> folder.</p>
+</li>
+<li>
+<p>In the main() function, change the title property to <code>"Hello Build Trigger."</code> as shown below:</p>
+</li>
+</ol>
+<ql-code-block output="">
+@app.route("/")
+def main():
+    model = {"title":  "Hello Build Trigger."}
+    return render_template("index.html", model=model)
+</ql-code-block>
+<ol start="11">
+<li>Commit the change with the following command:</li>
+</ol>
+<ql-code-block language="bash">
+cd ~/gcp-course/devops-repo
+git commit -a -m "Testing Build Trigger"
+</ql-code-block>
+<ol start="12">
+<li>Enter the following to push your changes to Cloud Source Repositories:</li>
+</ol>
+<ql-code-block language="bash">
+git push origin master
+</ql-code-block>
+<ol start="13">
+<li>Return to the Cloud Console and the <strong>Cloud Build</strong> service. You should see another build running.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="3">
+Automate Builds with Trigger.
+</ql-activity-tracking></p>
+<h2 id="step9">Task 6. Test your build changes</h2>
+<ol>
+<li>
+<p>When the build completes, click on it to see its details.</p>
+</li>
+<li>
+<p>Click <strong>Execution Details</strong>,</p>
+</li>
+<li>
+<p>Click the <strong>Image name</strong>. This redirects you to the image page in Artifact Registry.</p>
+</li>
+<li>
+<p>At the top of the pane, click <strong>copy</strong> next to the image name. You will need this for the next steps. The format will look as follows.</p>
+</li>
+</ol>
+<p><code>us-central1-docker.pkg.dev/qwiklabs-gcp-04-ac8940f14d1d/devops-demo/devops-image@sha256:8aede81a8b6ba1a90d4d808f509d05ddbb1cee60a50ebcf0cee46e1df9a54810</code></p>
+<ql-warningbox><strong>Note: </strong>Do not use the image name located in Digest.</ql-warningbox>
+<ol start="5">
+<li>
+<p>Go to the <strong>Compute Engine</strong> service. As you did earlier, create a new virtual machine to test this image. Click <strong>DEPLOY CONTAINER</strong> and paste the image you just copied.</p>
+</li>
+<li>
+<p>Select <strong>Allow HTTP traffic</strong>.</p>
+</li>
+<li>
+<p>When the machine is created, test your change by making a request to the VM's external IP address in your browser. Your new message should be displayed.</p>
+</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>You might have to wait a few minutes after the VM is created for the Docker container to start.</ql-warningbox>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="4">
+Test your Build Changes.
+</ql-activity-tracking></p>
+<h2 id="step10">Congratulations!</h2>
+<p>In this lab, you built a continuous integration pipeline using the Google Cloud tools Cloud Source Repositories, Cloud Build, build triggers, and Artifact Registry.</p>
+<h2 id="step11">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Objectives</a></li><li><a href="#step3">Set up your lab environment</a></li><li><a href="#step4">Task 1. Create a Git repository</a></li><li><a href="#step5">Task 2. Create a simple Python application</a></li><li><a href="#step6">Task 3. Define a Docker build</a></li><li><a href="#step7">Task 4. Manage Docker images with Cloud Build and Artifact Registry</a></li><li><a href="#step8">Task 5. Automate builds with triggers</a></li><li><a href="#step9">Task 6. Test your build changes</a></li><li><a href="#step10">Congratulations!</a></li><li><a href="#step11">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab, you will build a continuous integration pipeline using Cloud Source Repositories, Cloud Build, Build Triggers and Container Registry.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+120m access
+&middot;
+60m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/2461">https://googlecoursera.qwiklabs.com/catalog_lab/2461</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="2461" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,1437 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Configuring Google Cloud HA VPN | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-990e13ea9ea264da0ab8ee25376a474b85237e1e.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="fWSFFyAq4VUZZSnPUvf/XQkZAX3QmgQU2vZV3ApB3zktcWTaFyzZYkInQwUks+P2Fnle0b3ELnVDlQo+mlCXFQ==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;barker&quot;,&quot;community_forum&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;used_in&quot;,&quot;content_provider_admin&quot;,&quot;program_announcements&quot;,&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;course_upgrade&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;program_learning_assignment&quot;,&quot;teams&quot;,&quot;peer_assignment&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;canonical_domain_redirect&quot;,&quot;alexandria_show_bundle_errors&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='Set up two VPCs and add a cloud HA-VPN gateway in each, then run two tunnels from each VPN gateway to demonstrate the HA-VPN gateway configuration for 99.99% SLA.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Configuring Google Cloud HA VPN | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='Set up two VPCs and add a cloud HA-VPN gateway in each, then run two tunnels from each VPN gateway to demonstrate the HA-VPN gateway configuration for 99.99% SLA.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32666455?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32666455?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-da73f1d12b824417d3fa2956c31a2f0cb210429a.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="28834e4326ae8716" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Configuring Google Cloud HA VPN</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32666455?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32666455?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32666455?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32666455?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32666455?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32666455?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32666455?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32666455?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32666455?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32666455?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32666455?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32666455?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32666455?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32666455?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32666455?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32666455?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32666455?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32666455?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32666455?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Configuring Google Cloud HA VPN&quot;,&quot;lab_name&quot;:&quot;Configuring Google Cloud HA VPN&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32666455' data-lab-billing-limit='0.0' data-lab-duration='4500' data-lab-instance-id='83380827' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:true}' labDetails='[{&quot;text&quot;:&quot;Open Google Cloud console&quot;,&quot;property&quot;:&quot;console_url&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;href&quot;:&quot;https://accounts.google.com/AddSession?service=accountsettings\u0026sarp=1\u0026continue=https%3A%2F%2Fconsole.cloud.google.com%2Fhome%2Fdashboard%3Fproject%3Dqwiklabs-gcp-04-8e4d3b52310c#Email=student-04-5c2d8e6314b0@qwiklabs.net&quot;,&quot;type&quot;:&quot;button&quot;},{&quot;label&quot;:&quot;Username&quot;,&quot;property&quot;:&quot;username&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;student-04-5c2d8e6314b0@qwiklabs.net&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Password&quot;,&quot;property&quot;:&quot;password&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;RHyhqWZIfn36&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;GCP Project ID&quot;,&quot;property&quot;:&quot;project_id&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;value&quot;:&quot;qwiklabs-gcp-04-8e4d3b52310c&quot;,&quot;type&quot;:&quot;credential&quot;}]' labTimer='{&quot;ticking&quot;:true,&quot;secondsRemaining&quot;:3847}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Configuring Google Cloud HA VPN
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>1 hour 15 minutes</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32666455/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.3883'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>HA VPN is a high-availability (HA) Cloud VPN solution that lets you securely connect your on-premises network to your VPC network through an IPsec VPN connection in a single region. HA VPN provides an SLA of 99.99% service availability.</p>
+<p>HA VPN is a regional per VPC, VPN solution. HA VPN gateways have two interfaces, each with its own public IP address. When you create an HA VPN gateway, two public IP addresses are automatically chosen from different address pools. When HA VPN is configured with two tunnels, Cloud VPN offers a 99.99% service availability uptime.</p>
+<p>In this lab you create a global VPC called <strong>vpc-demo</strong>, with two custom subnets in <ql-variable key="project_0.startup_script.secondary_region" placeholder="REGION"></ql-variable> and <ql-variable key="project_0.startup_script.primary_region" placeholder="&lt;filled in at lab start&gt;"></ql-variable>. In this VPC, you add a Compute Engine instance in each region. You then create a second VPC called <strong>on-prem</strong> to simulate a customer's on-premises data center. In this second VPC, you add a subnet in region <ql-variable key="project_0.startup_script.primary_region" placeholder="&lt;filled in at lab start&gt;"></ql-variable> and a Compute Engine instance running in this region. Finally, you add an HA VPN and a cloud router in each VPC and run two tunnels from each HA VPN gateway before testing the configuration to verify the 99.99% SLA.</p>
+<p><img alt="HA VPN Architecture Diagram" src="https://cdn.qwiklabs.com/VLAXpKCCD3vR0NwjlabV3gVp9Zzf1PPu7D91KCm9VY4%3D"></p>
+<h2 id="step2">Objectives</h2>
+<p>In this lab, you learn how to perform the following tasks:</p>
+<ul>
+<li>Create two VPC networks and instances.</li>
+<li>Configure HA VPN gateways.</li>
+<li>Configure dynamic routing with VPN tunnels.</li>
+<li>Configure global dynamic routing mode.</li>
+<li>Verify and test HA VPN gateway configuration.</li>
+</ul>
+<h2 id="step3">Setup and requirements</h2>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h4>How to start your lab and sign in to the Console</h4>
+<ol>
+<li>
+<p>Click the <strong>Start Lab</strong> button. If you need to pay for the lab, a pop-up opens for you to select your payment method.
+On the left is a panel populated with the temporary credentials that you must use for this lab.</p>
+<p><img alt="Credentials panel" src="https://cdn.qwiklabs.com/%2FtHp4GI5VSDyTtdqi3qDFtevuY014F88%2BFow%2FadnRgE%3D"></p>
+</li>
+<li>
+<p>Copy the username, and then click <strong>Open Google Console</strong>.
+The lab spins up resources, and then opens another tab that shows the <strong>Choose an account</strong> page.</p>
+<ql-infobox><strong>Note: </strong>Open the tabs in separate windows, side-by-side.</ql-infobox>
+</li>
+<li>
+<p>On the Choose an account page, click <strong>Use Another Account</strong>. The Sign in page opens.</p>
+<p><img alt="Choose an account dialog box with Use Another Account option highlighted " src="https://cdn.qwiklabs.com/eQ6xPnPn13GjiJP3RWlHWwiMjhooHxTNvzfg1AL2WPw%3D"></p>
+</li>
+<li>
+<p>Paste the username that you copied from the Connection Details panel. Then copy and paste the password.</p>
+</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>You must use the credentials from the Connection Details panel. Do not use your Google Cloud Skills Boost credentials. If you have your own Google Cloud account, do not use it for this lab (avoids incurring charges).</ql-warningbox>
+<ol start="5">
+<li>Click through the subsequent pages:</li>
+</ol>
+<ul>
+<li>Accept the terms and conditions.</li>
+<li>Do not add recovery options or two-factor authentication (because this is a temporary account).</li>
+<li>Do not sign up for free trials.</li>
+</ul>
+<p>After a few moments, the Cloud console opens in this tab.</p>
+<ql-infobox><strong>Note: </strong>You can view the menu with a list of Google Cloud Products and Services by clicking the <b>Navigation menu</b> at the top-left.
+<img alt="Cloud Console Menu" src="https://cdn.qwiklabs.com/9vT7xPlxoNP%2FPsK0J8j0ZPFB4HnnpaIJVCDByaBrSHg%3D">
+</ql-infobox>
+
+<h3>Activate Google Cloud Shell</h3>
+<p>Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.</p>
+<p>Google Cloud Shell provides command-line access to your Google Cloud resources.</p>
+<ol>
+<li>
+<p>In Cloud console, on the top right toolbar, click the Open Cloud Shell button.</p>
+<p><img alt="Highlighted Cloud Shell icon" src="https://cdn.qwiklabs.com/00tA48qOVOyHrSa1DA7LwccfwQ9Z%2BE6dkvQ1MYPHzhQ%3D"></p>
+</li>
+<li>
+<p>Click <strong>Continue</strong>.</p>
+</li>
+</ol>
+<p>It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your <em>PROJECT_ID</em>. For example:</p>
+<p><img alt="Project ID highlighted in the Cloud Shell Terminal" src="https://cdn.qwiklabs.com/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D"></p>
+<p><strong>gcloud</strong> is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.</p>
+<ul>
+<li>You can list the active account name with this command:</li>
+</ul>
+<ql-code-block language="plaintext">
+gcloud auth list
+</ql-code-block>
+<p><strong>Output:</strong></p>
+<ql-code-block output="">
+Credentialed accounts:
+ - @.com (active)
+</ql-code-block>
+<p><strong>Example output:</strong></p>
+<ql-code-block output="">
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+ </ql-code-block>
+<ul>
+<li>You can list the project ID with this command:</li>
+</ul>
+<ql-code-block language="plaintext">
+gcloud config list project
+</ql-code-block>
+<p><strong>Output:</strong></p>
+<ql-code-block output="">
+[core]
+project = 
+</ql-code-block>
+<p><strong>Example output:</strong></p>
+<ql-code-block output="">
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+</ql-code-block>
+<ql-infobox><strong>Note: </strong>
+  Full documentation of <strong>gcloud</strong> is available in the
+  <a href="https://cloud.google.com/sdk/gcloud" target="_blank">
+    gcloud CLI overview guide
+  </a>.
+</ql-infobox>
+
+<h2 id="step4">Task 1. Set up a Global VPC environment</h2>
+<p>In this task you set up a Global VPC with two custom subnets and two VM instances running in each zone.</p>
+<ol>
+<li>In Cloud Shell, create a VPC network called <strong>vpc-demo</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks create vpc-demo --subnet-mode custom
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/vpc-demo].
+NAME: vpc-demo
+SUBNET_MODE: CUSTOM
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE:
+GATEWAY_IPV4:
+</ql-code-block>
+<ol start="2">
+<li>In Cloud Shell, create subnet <strong>vpc-demo-subnet1</strong> in the region <strong><ql-variable key="project_0.startup_script.primary_region" placeholder="&lt;filled in at lab start&gt;"></ql-variable></strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks subnets create vpc-demo-subnet1 \
+--network vpc-demo --range 10.1.1.0/24 --region "{{{project_0.startup_script.primary_region|filled at lab start}}}"
+</ql-code-block>
+<ol start="3">
+<li>Create subnet <strong>vpc-demo-subnet2</strong> in the region <ql-variable key="project_0.startup_script.secondary_region" placeholder="REGION"></ql-variable>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks subnets create vpc-demo-subnet2 \
+--network vpc-demo --range 10.2.1.0/24 --region {{{project_0.startup_script.secondary_region | REGION}}}
+</ql-code-block>
+<ol start="4">
+<li>Create a firewall rule to allow all custom traffic within the network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute firewall-rules create vpc-demo-allow-custom \
+  --network vpc-demo \
+  --allow tcp:0-65535,udp:0-65535,icmp \
+  --source-ranges 10.0.0.0/8
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Creating firewall...working..Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/firewalls/vpc-demo-allow-custom].
+Creating firewall...done.
+NAME: vpc-demo-allow-custom
+NETWORK: vpc-demo
+DIRECTION: INGRESS
+PRIORITY: 1000
+ALLOW: tcp:0-65535,udp:0-65535,icmp
+DENY:
+DISABLED: False
+</ql-code-block>
+<ol start="5">
+<li>Create a firewall rule to allow SSH, ICMP traffic from anywhere:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute firewall-rules create vpc-demo-allow-ssh-icmp \
+    --network vpc-demo \
+    --allow tcp:22,icmp
+</ql-code-block>
+<ol start="6">
+<li>Create a VM instance <strong>vpc-demo-instance1</strong> in zone <strong><ql-variable key="project_0.startup_script.primary_zone" placeholder="&lt;filled in at lab start&gt;"></ql-variable></strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute instances create vpc-demo-instance1 --machine-type=e2-medium --zone {{{ project_0.startup_script.primary_zone | "filled at lab start" }}} --subnet vpc-demo-subnet1
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/zones/{{{ project_0.startup_script.primary_zone | "filled at lab start" }}}/instances/vpc-demo-instance1].
+NAME: vpc-demo-instance1
+ZONE: {{{ project_0.startup_script.primary_zone | "filled at lab start" }}}
+MACHINE_TYPE: e2-standard-2
+PREEMPTIBLE:
+INTERNAL_IP: 10.1.1.2
+EXTERNAL_IP: 34.71.135.218
+STATUS: RUNNING
+</ql-code-block>
+<ol start="7">
+<li>Create a VM instance <strong>vpc-demo-instance2</strong> in zone <ql-variable key="project_0.startup_script.secondary_zone" placeholder="ZONE"></ql-variable>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute instances create vpc-demo-instance2 --machine-type=e2-medium --zone {{{project_0.startup_script.secondary_zone | ZONE}}} --subnet vpc-demo-subnet2
+</ql-code-block>
+<h2 id="step5">Task 2. Set up a simulated on-premises environment</h2>
+<p>In this task you create a VPC called <strong>on-prem</strong> that simulates an on-premises environment from where a customer connects to the Google cloud environment.</p>
+<ol>
+<li>In  Cloud Shell,  create a VPC network called <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks create on-prem --subnet-mode custom
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/on-prem].
+NAME: on-prem
+SUBNET_MODE: CUSTOM
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE:
+GATEWAY_IPV4:
+</ql-code-block>
+<ol start="2">
+<li>Create a subnet called <strong>on-prem-subnet1</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks subnets create on-prem-subnet1 \
+--network on-prem --range 192.168.1.0/24 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="3">
+<li>Create a firewall rule to allow all custom traffic within the network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute firewall-rules create on-prem-allow-custom \
+  --network on-prem \
+  --allow tcp:0-65535,udp:0-65535,icmp \
+  --source-ranges 192.168.0.0/16
+</ql-code-block>
+<ol start="4">
+<li>Create a firewall rule to allow SSH, RDP, HTTP, and ICMP traffic to the instances:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute firewall-rules create on-prem-allow-ssh-icmp \
+    --network on-prem \
+    --allow tcp:22,icmp
+</ql-code-block>
+<ol start="5">
+<li>Create an instance called <strong>on-prem-instance1</strong> in the region <strong><ql-variable key="project_0.startup_script.primary_region" placeholder="&lt;filled in at lab start&gt;"></ql-variable></strong>.</li>
+</ol>
+<ql-infobox><strong>Note: </strong>In the below command replace  with a zone in <ql-variable key="project_0.startup_script.primary_region" placeholder="&lt;filled in at lab start&gt;"></ql-variable> but different from the one used to create the <strong>vpc-demo-instance1<strong> in the vpc-demo-subnet1 .
+</strong></strong></ql-infobox>
+<ql-code-block templated="">
+gcloud compute instances create on-prem-instance1 --machine-type=e2-medium --zone zone_name --subnet on-prem-subnet1
+</ql-code-block>
+<h2 id="step6">Task 3. Set up an HA VPN gateway</h2>
+<p>In this task you create an HA VPN gateway in each VPC network and then create HA VPN tunnels on each Cloud VPN gateway.</p>
+<ol>
+<li>In Cloud Shell, create an HA VPN in the <strong>vpc-demo network</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-gateways create vpc-demo-vpn-gw1 --network vpc-demo --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Creating VPN Gateway...done.   
+NAME: vpc-demo-vpn-gw1
+INTERFACE0: 35.242.117.95
+INTERFACE1: 35.220.73.93
+NETWORK: vpc-demo
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="2">
+<li>Create an HA VPN in the <strong>on-prem</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-gateways create on-prem-vpn-gw1 --network on-prem --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="3">
+<li>View details of the <strong>vpc-demo-vpn-gw1</strong> gateway to verify its settings:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-gateways describe vpc-demo-vpn-gw1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+creationTimestamp: '2022-01-25T03:02:20.983-08:00'
+id: '7306781839576950355'
+kind: compute#vpnGateway
+labelFingerprint: 42WmSpB8rSM=
+name: vpc-demo-vpn-gw1
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/vpc-demo
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnGateways/vpc-demo-vpn-gw1
+vpnInterfaces:
+- id: 0
+  ipAddress: 35.242.117.95
+- id: 1
+  ipAddress: 35.220.73.93
+</ql-code-block>
+<ol start="4">
+<li>View details of the <strong>on-prem-vpn-gw1</strong> vpn-gateway to verify its settings:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-gateways describe on-prem-vpn-gw1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+creationTimestamp: '2022-01-25T03:03:34.305-08:00'
+id: '3697047034868688873'
+kind: compute#vpnGateway
+labelFingerprint: 42WmSpB8rSM=
+name: on-prem-vpn-gw1
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/on-prem
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnGateways/on-prem-vpn-gw1
+vpnInterfaces:
+- id: 0
+  ipAddress: 35.242.106.234
+- id: 1
+  ipAddress: 35.220.88.140
+</ql-code-block>
+<h3>Create cloud routers</h3>
+<ol>
+<li>Create a cloud router in the <strong>vpc-demo</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers create vpc-demo-router1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}} \
+    --network vpc-demo \
+    --asn 65001
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Creating router [vpc-demo-router1]...done.     
+NAME: vpc-demo-router1
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+NETWORK: vpc-demo
+</ql-code-block>
+<ol start="2">
+<li>Create a cloud router in the <strong>on-prem</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers create on-prem-router1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}} \
+    --network on-prem \
+    --asn 65002
+</ql-code-block>
+<h2 id="step7">Task 4. Create two VPN tunnels</h2>
+<p>In this task you create VPN tunnels between the two gateways. For HA VPN setup, you add two tunnels from each gateway to the remote setup. You create a tunnel on <strong>interface0</strong> and connect to <strong>interface0</strong> on the remote gateway. Next, you create another tunnel on <strong>interface1</strong> and connect to <strong>interface1</strong> on the remote gateway.</p>
+<p>When you run HA VPN tunnels between two Google Cloud VPCs, you need to make sure that the tunnel on <strong>interface0</strong> is connected to <strong>interface0</strong> on the remote VPN gateway. Similarly, the tunnel on <strong>interface1</strong> must be connected to <strong>interface1</strong> on the remote VPN gateway.</p>
+<ql-infobox><strong>Note: </strong>In your own environment, if you run HA VPN to a remote VPN gateway on-premises for a customer, you can connect in one of the following ways:
+<p></p>
+<ul>
+<li>
+<em>Two on-premises VPN gateway devices:</em> Each of the tunnels from each interface on the Cloud VPN gateway must be connected to its own peer gateway.</li>
+<li>
+<em>A single on-premises VPN gateway device with two interfaces:</em> Each of the tunnels from each interface on the Cloud VPN gateway must be connected to its own interface on the peer gateway.</li>
+<li>
+<em>A single on-premises VPN gateway device with a single interface:</em> Both of the tunnels from each interface on the Cloud VPN gateway must be connected to the same interface on the peer gateway.</li>
+</ul></ql-infobox>
+<p>In this lab you are simulating an on-premises setup with both VPN gateways in Google Cloud. You ensure that <strong>interface0</strong> of one gateway connects to <strong>interface0</strong> of the other and <strong>interface1</strong> connects to <strong>interface1</strong> of the remote gateway.</p>
+<ol>
+<li>Create the first VPN tunnel in the <strong>vpc-demo</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels create vpc-demo-tunnel0 \
+    --peer-gcp-gateway on-prem-vpn-gw1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}} \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router vpc-demo-router1 \
+    --vpn-gateway vpc-demo-vpn-gw1 \
+    --interface 0
+
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">  
+Creating VPN tunnel...done.     
+NAME: vpc-demo-tunnel0
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+GATEWAY: vpc-demo-vpn-gw1
+VPN_INTERFACE: 0
+PEER_ADDRESS: 35.242.106.234
+</ql-code-block>
+<ol start="2">
+<li>Create the second VPN tunnel in the <strong>vpc-demo</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels create vpc-demo-tunnel1 \
+    --peer-gcp-gateway on-prem-vpn-gw1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}} \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router vpc-demo-router1 \
+    --vpn-gateway vpc-demo-vpn-gw1 \
+    --interface 1
+</ql-code-block>
+<ol start="3">
+<li>Create the first VPN tunnel in the <strong>on-prem</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels create on-prem-tunnel0 \
+    --peer-gcp-gateway vpc-demo-vpn-gw1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}} \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router on-prem-router1 \
+    --vpn-gateway on-prem-vpn-gw1 \
+    --interface 0
+</ql-code-block>
+<ol start="4">
+<li>Create the second VPN tunnel in the <strong>on-prem</strong> network:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels create on-prem-tunnel1 \
+    --peer-gcp-gateway vpc-demo-vpn-gw1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}} \
+    --ike-version 2 \
+    --shared-secret [SHARED_SECRET] \
+    --router on-prem-router1 \
+    --vpn-gateway on-prem-vpn-gw1 \
+    --interface 1
+</ql-code-block>
+<h2 id="step8">Task 5. Create Border Gateway Protocol (BGP) peering for each tunnel</h2>
+<p>In this task you configure BGP peering for each VPN tunnel between <strong>vpc-demo</strong> and VPC <strong>on-prem</strong>. HA VPN requires dynamic routing to enable 99.99% availability.</p>
+<ol>
+<li>Create the router interface for <strong>tunnel0</strong> in network <strong>vpc-demo</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-interface vpc-demo-router1 \
+    --interface-name if-tunnel0-to-on-prem \
+    --ip-address 169.254.0.1 \
+    --mask-length 30 \
+    --vpn-tunnel vpc-demo-tunnel0 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">  
+Updated [https://www.googleapis.com/compute/v1/projects/binal-sandbox/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/routers/vpc-demo-router1].
+</ql-code-block>
+<ol start="2">
+<li>Create the BGP peer for <strong>tunnel0</strong> in network <strong>vpc-demo</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-bgp-peer vpc-demo-router1 \
+    --peer-name bgp-on-prem-tunnel0 \
+    --interface if-tunnel0-to-on-prem \
+    --peer-ip-address 169.254.0.2 \
+    --peer-asn 65002 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">  
+Creating peer [bgp-on-prem-tunnel0] in router [vpc-demo-router1]...done.
+</ql-code-block>
+<ol start="3">
+<li>Create a router interface for <strong>tunnel1</strong> in network <strong>vpc-demo</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-interface vpc-demo-router1 \
+    --interface-name if-tunnel1-to-on-prem \
+    --ip-address 169.254.1.1 \
+    --mask-length 30 \
+    --vpn-tunnel vpc-demo-tunnel1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="4">
+<li>Create the BGP peer for <strong>tunnel1</strong> in network <strong>vpc-demo</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-bgp-peer vpc-demo-router1 \
+    --peer-name bgp-on-prem-tunnel1 \
+    --interface if-tunnel1-to-on-prem \
+    --peer-ip-address 169.254.1.2 \
+    --peer-asn 65002 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="5">
+<li>Create a router interface for <strong>tunnel0</strong> in network <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-interface on-prem-router1 \
+    --interface-name if-tunnel0-to-vpc-demo \
+    --ip-address 169.254.0.2 \
+    --mask-length 30 \
+    --vpn-tunnel on-prem-tunnel0 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="6">
+<li>Create the BGP peer for <strong>tunnel0</strong> in network <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-bgp-peer on-prem-router1 \
+    --peer-name bgp-vpc-demo-tunnel0 \
+    --interface if-tunnel0-to-vpc-demo \
+    --peer-ip-address 169.254.0.1 \
+    --peer-asn 65001 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="7">
+<li>Create a router interface for <strong>tunnel1</strong> in network <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-interface  on-prem-router1 \
+    --interface-name if-tunnel1-to-vpc-demo \
+    --ip-address 169.254.1.2 \
+    --mask-length 30 \
+    --vpn-tunnel on-prem-tunnel1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ol start="8">
+<li>Create the BGP peer for <strong>tunnel1</strong> in network <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers add-bgp-peer  on-prem-router1 \
+    --peer-name bgp-vpc-demo-tunnel1 \
+    --interface if-tunnel1-to-vpc-demo \
+    --peer-ip-address 169.254.1.1 \
+    --peer-asn 65001 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<h2 id="step9">Task 6. Verify router configurations</h2>
+<p>In this task you verify the router configurations in both VPCs. You configure firewall rules to allow traffic between each VPC and verify the status of the tunnels. You also verify private connectivity over VPN between each VPC and enable global routing mode for the VPC.</p>
+<ol>
+<li>View details of Cloud Router <strong>vpc-demo-router1</strong> to verify its settings:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers describe vpc-demo-router1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+bgp:
+  advertiseMode: DEFAULT
+  asn: 65001
+  keepaliveInterval: 20
+bgpPeers:
+- bfd:
+    minReceiveInterval: 1000
+    minTransmitInterval: 1000
+    multiplier: 5
+    sessionInitializationMode: DISABLED
+  enable: 'TRUE'
+  interfaceName: if-tunnel0-to-on-prem
+  ipAddress: 169.254.0.1
+  name: bgp-on-prem-tunnel0
+  peerAsn: 65002
+  peerIpAddress: 169.254.0.2
+- bfd:
+    minReceiveInterval: 1000
+    minTransmitInterval: 1000
+    multiplier: 5
+    sessionInitializationMode: DISABLED
+  enable: 'TRUE'
+  interfaceName: if-tunnel1-to-on-prem
+  ipAddress: 169.254.1.1
+  name: bgp-on-prem-tunnel1
+  peerAsn: 65002
+  peerIpAddress: 169.254.1.2
+creationTimestamp: '2022-01-25T03:06:23.370-08:00'
+id: '2408056426544129856'
+interfaces:
+- ipRange: 169.254.0.1/30
+  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnTunnels/vpc-demo-tunnel0
+  name: if-tunnel0-to-on-prem
+- ipRange: 169.254.1.1/30
+  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnTunnels/vpc-demo-tunnel1
+  name: if-tunnel1-to-on-prem
+kind: compute#router
+name: vpc-demo-router1
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/vpc-demo
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/routers/vpc-demo-router1
+</ql-code-block>
+<ol start="2">
+<li>View details of Cloud Router <strong>on-prem-router1</strong> to verify its settings:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute routers describe on-prem-router1 \
+    --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+bgp:
+  advertiseMode: DEFAULT
+  asn: 65002
+  keepaliveInterval: 20
+bgpPeers:
+- bfd:
+    minReceiveInterval: 1000
+    minTransmitInterval: 1000
+    multiplier: 5
+    sessionInitializationMode: DISABLED
+  enable: 'TRUE'
+  interfaceName: if-tunnel0-to-vpc-demo
+  ipAddress: 169.254.0.2
+  name: bgp-vpc-demo-tunnel0
+  peerAsn: 65001
+  peerIpAddress: 169.254.0.1
+- bfd:
+    minReceiveInterval: 1000
+    minTransmitInterval: 1000
+    multiplier: 5
+    sessionInitializationMode: DISABLED
+  enable: 'TRUE'
+  interfaceName: if-tunnel1-to-vpc-demo
+  ipAddress: 169.254.1.2
+  name: bgp-vpc-demo-tunnel1
+  peerAsn: 65001
+  peerIpAddress: 169.254.1.1
+creationTimestamp: '2022-01-25T03:07:40.360-08:00'
+id: '3252882979067946771'
+interfaces:
+- ipRange: 169.254.0.2/30
+  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnTunnels/on-prem-tunnel0
+  name: if-tunnel0-to-vpc-demo
+- ipRange: 169.254.1.2/30
+  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnTunnels/on-prem-tunnel1
+  name: if-tunnel1-to-vpc-demo
+kind: compute#router
+name: on-prem-router1
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/on-prem
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/routers/on-prem-router1
+</ql-code-block>
+<h3>Configure firewall rules to allow traffic from the remote VPC</h3>
+<p>Configure firewall rules to allow traffic from the private IP ranges of peer VPN.</p>
+<ol>
+<li>Allow traffic from network VPC <strong>on-prem</strong> to <strong>vpc-demo</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute firewall-rules create vpc-demo-allow-subnets-from-on-prem \
+    --network vpc-demo \
+    --allow tcp,udp,icmp \
+    --source-ranges 192.168.1.0/24
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+Creating firewall...working..Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/firewalls/vpc-demo-allow-subnets-from-on-prem].
+Creating firewall...done.
+NAME: vpc-demo-allow-subnets-from-on-prem
+NETWORK: vpc-demo
+DIRECTION: INGRESS
+PRIORITY: 1000
+ALLOW: tcp,udp,icmp
+DENY:
+DISABLED: False
+</ql-code-block>
+<ol start="2">
+<li>Allow traffic from <strong>vpc-demo</strong> to network VPC <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute firewall-rules create on-prem-allow-subnets-from-vpc-demo \
+    --network on-prem \
+    --allow tcp,udp,icmp \
+    --source-ranges 10.1.1.0/24,10.2.1.0/24
+</ql-code-block>
+<h3>Verify the status of the tunnels</h3>
+<ol>
+<li>List the VPN tunnels you just created:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels list
+</ql-code-block>
+<p>There should be four VPN tunnels (two tunnels for each VPN gateway). The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+NAME: on-prem-tunnel0
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+GATEWAY: on-prem-vpn-gw1
+PEER_ADDRESS: 35.242.117.95
+
+NAME: on-prem-tunnel1
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+GATEWAY: on-prem-vpn-gw1
+PEER_ADDRESS: 35.220.73.93
+
+NAME: vpc-demo-tunnel0
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+GATEWAY: vpc-demo-vpn-gw1
+PEER_ADDRESS: 35.242.106.234
+
+NAME: vpc-demo-tunnel1
+REGION: {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+GATEWAY: vpc-demo-vpn-gw1
+PEER_ADDRESS: 35.220.88.140
+</ql-code-block>
+<ol start="2">
+<li>Verify that <strong>vpc-demo-tunnel0</strong> tunnel is up:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels describe vpc-demo-tunnel0 \
+      --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The tunnel output should show detailed status as <em>Tunnel is up and running.</em></p>
+<ql-code-block output="" templated="">
+creationTimestamp: '2022-01-25T03:21:05.238-08:00'
+description: ''
+detailedStatus: Tunnel is up and running.
+id: '3268990180169769934'
+ikeVersion: 2
+kind: compute#vpnTunnel
+labelFingerprint: 42WmSpB8rSM=
+localTrafficSelector:
+- 0.0.0.0/0
+name: vpc-demo-tunnel0
+peerGcpGateway: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnGateways/on-prem-vpn-gw1
+peerIp: 35.242.106.234
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+remoteTrafficSelector:
+- 0.0.0.0/0
+router: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/routers/vpc-demo-router1
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnTunnels/vpc-demo-tunnel0
+sharedSecret: '*************'
+sharedSecretHash: AOs4oVY4bX91gba6DIeg1DbtzWTj
+status: ESTABLISHED
+vpnGateway: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnGateways/vpc-demo-vpn-gw1
+vpnGatewayInterface: 0
+</ql-code-block>
+<ol start="3">
+<li>Verify that <strong>vpc-demo-tunnel1</strong> tunnel is up:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels describe vpc-demo-tunnel1 \
+      --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The tunnel output should show detailed status as <em>Tunnel is up and running.</em></p>
+<ol start="4">
+<li>Verify that <strong>on-prem-tunnel0</strong> tunnel is up:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels describe on-prem-tunnel0 \
+      --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The tunnel output should show detailed status as <em>Tunnel is up and running.</em></p>
+<ol start="5">
+<li>Verify that <strong>on-prem-tunnel1</strong> tunnel is up:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels describe on-prem-tunnel1 \
+      --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The tunnel output should show detailed status as <em>Tunnel is up and running.</em></p>
+<h3>Verify private connectivity over VPN</h3>
+<ol>
+<li>
+<p>Navigate to Compute engine and note the zone in which the <strong>on-prem-instance1</strong> was created.</p>
+</li>
+<li>
+<p>Open a new Cloud Shell tab and type the following to connect via SSH to the  instance <strong>on-prem-instance1</strong>:
+Replace &lt;zone_name&gt; with the zone in which the <strong>on-prem-instance1</strong> was created.</p>
+<ql-code-block templated="">
+gcloud compute ssh on-prem-instance1 --zone zone_name
+</ql-code-block>
+</li>
+<li>
+<p>Type "y" to confirm that you want to continue.</p>
+</li>
+<li>
+<p>Press <strong>Enter</strong> twice to skip creating a password.</p>
+</li>
+<li>
+<p>From the instance <strong>on-prem-instance1</strong> in network <strong>on-prem</strong>, to reach instances in network <strong>vpc-demo</strong>, ping 10.1.1.2:</p>
+</li>
+</ol>
+<ql-code-block templated="">
+ping -c 4 10.1.1.2
+</ql-code-block>
+<p>Pings are successful. The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=62 time=9.65 ms
+64 bytes from 10.1.1.2: icmp_seq=2 ttl=62 time=2.01 ms
+64 bytes from 10.1.1.2: icmp_seq=3 ttl=62 time=1.71 ms
+64 bytes from 10.1.1.2: icmp_seq=4 ttl=62 time=1.77 ms
+
+--- 10.1.1.2 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 8ms
+rtt min/avg/max/mdev = 1.707/3.783/9.653/3.391 ms
+</ql-code-block>
+<h3>Global routing with VPN</h3>
+<p>HA VPN is a regional resource and cloud router that by default only sees the routes in the region in which it is deployed. To reach instances in a different region than the cloud router, you need to enable global routing mode for the VPC.  This allows the cloud router to see and advertise routes from other regions.</p>
+<ol>
+<li>Open a new Cloud Shell tab and update the <strong>bgp-routing mode</strong> from <strong>vpc-demo</strong> to <strong>GLOBAL</strong>:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks update vpc-demo --bgp-routing-mode GLOBAL
+</ql-code-block>
+<ol start="2">
+<li>Verify the change:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute networks describe vpc-demo
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+autoCreateSubnetworks: false
+creationTimestamp: '2022-01-25T02:52:58.553-08:00'
+id: '4735939730452146277'
+kind: compute#network
+name: vpc-demo
+routingConfig:
+  routingMode: GLOBAL
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/global/networks/vpc-demo
+subnetworks:
+- https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/subnetworks/vpc-demo-subnet1
+- https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/us-west1/subnetworks/vpc-demo-subnet2
+x_gcloud_bgp_routing_mode: GLOBAL
+x_gcloud_subnet_mode: CUSTOM
+</ql-code-block>
+<ol start="3">
+<li>From the Cloud Shell tab that is currently connected to the instance in network <strong>on-prem</strong> via <strong>ssh</strong>, ping the instance <strong>vpc-demo-instance2</strong> in region <ql-variable key="project_0.startup_script.secondary_region" placeholder="REGION"></ql-variable>:</li>
+</ol>
+<ql-code-block templated="">
+ping -c 2 10.2.1.2
+</ql-code-block>
+<p>Pings are successful. The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+PING 10.2.1.2 (10.2.1.2) 56(84) bytes of data.
+64 bytes from 10.2.1.2: icmp_seq=1 ttl=62 time=34.9 ms
+64 bytes from 10.2.1.2: icmp_seq=2 ttl=62 time=32.2 ms
+
+--- 10.2.1.2 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 2ms
+rtt min/avg/max/mdev = 32.189/33.528/34.867/1.339 ms
+</ql-code-block>
+<h2 id="step10">Task 7. Verify and test the configuration of HA VPN tunnels</h2>
+<p>In this task you will test and verify that the high availability configuration of each HA VPN tunnel is successful.</p>
+<ol>
+<li>
+<p>Open a new Cloud Shell tab.</p>
+</li>
+<li>
+<p>Bring <strong>tunnel0</strong> in network <strong>vpc-demo</strong> down:</p>
+</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels delete vpc-demo-tunnel0  --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>Respond "y" when asked to verify the deletion. The respective <strong>tunnel0</strong> in network <strong>on-prem</strong> will go down.</p>
+<ol start="3">
+<li>Verify that the tunnel is down:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels describe on-prem-tunnel0  --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<p>The detailed status should show as <em>Handshake_with_peer_broken</em>.</p>
+<ql-code-block output="" templated="">
+creationTimestamp: '2022-01-25T03:22:33.581-08:00'
+description: ''
+detailedStatus: Handshake with peer broken for unknown reason. Trying again soon.
+id: '4116279561430393750'
+ikeVersion: 2
+kind: compute#vpnTunnel
+localTrafficSelector:
+- 0.0.0.0/0
+name: on-prem-tunnel0
+peerGcpGateway: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnGateways/vpc-demo-vpn-gw1
+peerIp: 35.242.117.95
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+remoteTrafficSelector:
+- 0.0.0.0/0
+router: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/routers/on-prem-router1
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnTunnels/on-prem-tunnel0
+sharedSecret: '*************'
+sharedSecretHash: AO3jeFtewmjvTMO7JEM5RuyCtqaa
+status: FIRST_HANDSHAKE
+vpnGateway: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-cdb29e18d20d/regions/{{{ project_0.startup_script.primary_region | "filled at lab start" }}}/vpnGateways/on-prem-vpn-gw1
+vpnGatewayInterface: 0
+</ql-code-block>
+<ol start="4">
+<li>Switch to the previous Cloud Shell tab that has the open <strong>ssh</strong> session running, and verify the pings between the instances in network <strong>vpc-demo</strong> and network <strong>on-prem</strong>:</li>
+</ol>
+<ql-code-block templated="">
+ping -c 3 10.1.1.2
+</ql-code-block>
+<p>The output should look similar to this:</p>
+<ql-code-block output="" templated="">
+PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=62 time=6.31 ms
+64 bytes from 10.1.1.2: icmp_seq=2 ttl=62 time=1.13 ms
+64 bytes from 10.1.1.2: icmp_seq=3 ttl=62 time=1.20 ms
+
+--- 10.1.1.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 5ms
+rtt min/avg/max/mdev = 1.132/2.882/6.312/2.425 ms
+</ql-code-block>
+<p>Pings are still successful because the traffic is now sent over the second tunnel. You have successfully configured HA VPN tunnels.</p>
+<h2 id="step11">Task 8. (Optional) Clean up lab environment</h2>
+<p>In this task you clean up the resources you have used. This task is optional. When you end the lab, all your resources and your project are cleaned up and discarded for you automatically. However, you should know how to clean up resources yourself in your own environment to save on costs and reduce resource usage.</p>
+<h3>Delete VPN tunnels</h3>
+<ul>
+<li>From Cloud Shell, type the following commands to delete the remaining tunnels. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels delete on-prem-tunnel0  --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels delete vpc-demo-tunnel1  --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute vpn-tunnels delete on-prem-tunnel1  --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<h3>Remove BGP peering</h3>
+<ul>
+<li>Type the following commands from each BGP peer to remove peering:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute routers remove-bgp-peer vpc-demo-router1 --peer-name bgp-on-prem-tunnel0 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute routers remove-bgp-peer vpc-demo-router1 --peer-name bgp-on-prem-tunnel1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute routers remove-bgp-peer on-prem-router1 --peer-name bgp-vpc-demo-tunnel0 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute routers remove-bgp-peer on-prem-router1 --peer-name bgp-vpc-demo-tunnel1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<h3>Delete cloud routers</h3>
+<ul>
+<li>Type each command to delete the routers. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute  routers delete on-prem-router1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute  routers delete vpc-demo-router1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<h3>Delete VPN gateways</h3>
+<ul>
+<li>Type each command to delete the VPN gateways. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute vpn-gateways delete vpc-demo-vpn-gw1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute vpn-gateways delete on-prem-vpn-gw1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<h3>Delete instances</h3>
+<ul>
+<li>Type the following commands to delete each instance. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute instances delete vpc-demo-instance1 --zone {{{ project_0.startup_script.primary_zone | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute instances delete vpc-demo-instance2 --zone {{{project_0.startup_script.secondary_zone | ZONE}}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute instances delete on-prem-instance1 --zone zone_name
+</ql-code-block>
+<ql-infobox><strong>NOTE</strong>: Replace  with the zone in which the on-prem-instance1 was created.
+</ql-infobox>
+<h3>Delete firewall rules</h3>
+<ul>
+<li>Type the following to delete the firewall rules. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute firewall-rules delete vpc-demo-allow-custom
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute firewall-rules delete on-prem-allow-subnets-from-vpc-demo
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute firewall-rules delete on-prem-allow-ssh-icmp
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute firewall-rules delete on-prem-allow-custom
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute firewall-rules delete vpc-demo-allow-subnets-from-on-prem
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute firewall-rules delete vpc-demo-allow-ssh-icmp
+</ql-code-block>
+<h3>Delete subnets</h3>
+<ul>
+<li>Type the following to delete the subnets. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute networks subnets delete vpc-demo-subnet1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute networks subnets delete vpc-demo-subnet2 --region {{{project_0.startup_script.secondary_region | REGION}}}
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute networks subnets delete on-prem-subnet1 --region {{{ project_0.startup_script.primary_region | "filled at lab start" }}}
+</ql-code-block>
+<h3>Delete VPC</h3>
+<ul>
+<li>Type these commands to delete the VPCs. Type "y" to confirm each action when asked:</li>
+</ul>
+<ql-code-block templated="">
+gcloud compute networks delete vpc-demo
+</ql-code-block>
+<ql-code-block templated="">
+gcloud compute networks delete on-prem
+</ql-code-block>
+<h2 id="step12">Task 9: Review</h2>
+<p>In this lab you configured HA VPN gateways. You also configured dynamic routing with VPN tunnels and configured global dynamic routing mode. Finally you verified that HA VPN is configured and functioning correctly.</p>
+<h2 id="step13">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Objectives</a></li><li><a href="#step3">Setup and requirements</a></li><li><a href="#step4">Task 1. Set up a Global VPC environment</a></li><li><a href="#step5">Task 2. Set up a simulated on-premises environment</a></li><li><a href="#step6">Task 3. Set up an HA VPN gateway</a></li><li><a href="#step7">Task 4. Create two VPN tunnels</a></li><li><a href="#step8">Task 5. Create Border Gateway Protocol (BGP) peering for each tunnel</a></li><li><a href="#step9">Task 6. Verify router configurations</a></li><li><a href="#step10">Task 7. Verify and test the configuration of HA VPN tunnels</a></li><li><a href="#step11">Task 8. (Optional) Clean up lab environment</a></li><li><a href="#step12">Task 9: Review</a></li><li><a href="#step13">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+Set up two VPCs and add a cloud HA-VPN gateway in each, then run two tunnels from each VPN gateway to demonstrate the HA-VPN gateway configuration for 99.99% SLA.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+75m access
+&middot;
+75m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>advanced</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/3672">https://googlecoursera.qwiklabs.com/catalog_lab/3672</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="3672" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,774 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Working with the Google Cloud Console and Cloud Shell | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-383ac8dce987ca8ef68702cd64980b76aa83af6d.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="tnY8tHHMbliedz7QpSgAFycOrJf18qG42fwBNitH8byiItRJKM8S43ri2pUHX+1bZhZaiJSF0LrVggis+cdYZA==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;alexandria_show_bundle_errors&quot;,&quot;program_announcements&quot;,&quot;canonical_domain_redirect&quot;,&quot;program_learning_assignment&quot;,&quot;barker&quot;,&quot;used_in&quot;,&quot;course_upgrade&quot;,&quot;community_forum&quot;,&quot;peer_assignment&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;teams&quot;,&quot;content_provider_admin&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab, you will become familiar with the Google Cloud web-based interface including Console, the  GUI (graphical user interface) environment, and Cloud Shell, the CLI (command line interface) environment.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Working with the Google Cloud Console and Cloud Shell | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab, you will become familiar with the Google Cloud web-based interface including Console, the  GUI (graphical user interface) environment, and Cloud Shell, the CLI (command line interface) environment.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32639702?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32639702?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-29602dc272dc25b87d80aad082aeac190a74d2ab.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="b069fd2aa54ca8aa" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Working with the Google Cloud Console and Cloud Shell</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32639702?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32639702?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32639702?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32639702?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32639702?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32639702?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32639702?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32639702?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32639702?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32639702?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32639702?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32639702?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32639702?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32639702?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32639702?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32639702?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32639702?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32639702?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32639702?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+—/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create a bucket using the GCP Console
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create a bucket using the GCP Console' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+</span>
+/ 30
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create a bucket using Cloud Shell
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create a bucket using Cloud Shell' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+</span>
+/ 30
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Upload a file to Storage bucket
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Upload a file to Storage bucket' step_no='3'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-3'>
+</span>
+/ 40
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Working with the Google Cloud Console and Cloud Shell&quot;,&quot;lab_name&quot;:&quot;Working with the Google Cloud Console and Cloud Shell&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32639702' data-lab-billing-limit='0.0' data-lab-duration='2400' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:false}' labDetails='[]' labTimer='{&quot;ticking&quot;:false,&quot;secondsRemaining&quot;:2400}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Working with the Google Cloud Console and Cloud Shell
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>40 minutes</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32639702/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.6049'></div>
+
+</a><ql-button aria-label='Rate Lab' id='rate-lab-btn' label='Rate Lab' text></ql-button>
+</div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>In this lab, you become familiar with the Google Cloud web-based interface. There are two integrated environments: a GUI (graphical user interface) environment called the Cloud Console, and a CLI (command-line interface) called Cloud Shell. In this lab, you use both environments.</p>
+<p>Here are a few things you need to know about the Cloud Console:</p>
+<ul>
+<li>The Cloud Console is under continuous development, so occasionally the graphical layout changes. This is most often to accommodate new Google Cloud features or changes in the technology, resulting in a slightly different workflow.</li>
+<li>You can perform most common Google Cloud actions in the Cloud Console, but not all actions. In particular, very new technologies or sometimes detailed API or command options are not implemented (or not yet implemented) in the Cloud Console. In these cases, the command line or the API is the best alternative.</li>
+<li>The Cloud Console is extremely fast for some activities. The Cloud Console can perform multiple actions on your behalf that might require many CLI commands. It can also perform repetitive actions. In a few clicks you can accomplish activities that would require a lot of typing and would be susceptible to typing errors.</li>
+<li>The Cloud Console is able to reduce errors by offering only valid options through its menus. It can leverage access to the platform "behind the scenes" through the SDK to validate configuration before submitting changes. A command line can't do this kind of dynamic validation.</li>
+</ul>
+<h2 id="step2">Objectives</h2>
+<p>In this lab, you learn how to perform the following tasks:</p>
+<ul>
+<li>Get access to Google Cloud.</li>
+<li>Use the Cloud Console to create a Cloud Storage bucket.</li>
+<li>Use Cloud Shell to create a Cloud Storage bucket.</li>
+<li>Become familiar with Cloud Shell features.</li>
+</ul>
+<h3>Qwiklabs setup</h3>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step3">Task 1. Use the Cloud Console to create a bucket</h2>
+<p>In this task, you create a bucket. However, the text also helps you become familiar with how actions are presented in the lab instructions in this class and teaches you about the Cloud Console interface.</p>
+<h3>Navigate to the Storage service and create the bucket</h3>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Cloud Storage &gt; Bucket</strong>.</li>
+<li>Click <strong>Create</strong>.</li>
+<li>For <strong>Name</strong>, type a globally unique bucket name; leave all other values as their defaults.</li>
+<li>Click <strong>Create</strong>.</li>
+<li>If prompted <code>Public access will be prevented</code> click <strong>Confirm</strong>.</li>
+</ol>
+<h3>Explore features in the Cloud Console</h3>
+<p>The Google Cloud menu contains a Notifications icon. Sometimes, feedback from the underlying commands is provided there. If you are not sure what is happening, check Notifications for additional information and history.</p>
+<p>Click <strong>Check my progress</strong> to verify the objective.</p>
+<ql-activity-tracking step="1">
+      Create a bucket using the Cloud Console
+</ql-activity-tracking>
+<h2 id="step4">Task 2. Access Cloud Shell</h2>
+<p>In this section, you explore Cloud Shell and some of its features.</p>
+<p>You can use the Cloud Shell to manage projects and resources via command line without having to install the Cloud SDK and other tools on your computer.</p>
+<p>Cloud shell provides the following:</p>
+<ul>
+<li>Temporary Compute Engine VM</li>
+<li>Command-line access to the instance via a browser</li>
+<li>5 GB of persistent disk storage ($HOME dir)</li>
+<li>Pre-installed Cloud SDK and other tools</li>
+<li>gcloud: for working with Compute Engine and many Google Cloud services</li>
+<li>gcloud storage: for working with Cloud Storage</li>
+<li>kubectl: for working with Google Kubernetes Engine and Kubernetes</li>
+<li>bq: for working with BigQuery</li>
+<li>Language support for Java, Go, Python, Node.js, PHP, and Ruby</li>
+<li>Web preview functionality</li>
+<li>Built-in authorization for access to resources and instances</li>
+</ul>
+<p>Learn more about Cloud Shell from the Google Cloud <a href="https://cloud.google.com/shell/docs" target="_blank">Cloud Shell Documentation</a>.</p>
+<ql-warningbox>
+<strong>Note:</strong> After 1 hour of inactivity, the Cloud Shell instance is recycled. Only the /home directory persists. Any changes made to the system configuration, including environment variables, are lost between sessions.
+</ql-warningbox>
+<h3>Open Cloud Shell and explore features</h3>
+<ol>
+<li>
+<p>In the Google Cloud menu, click <strong>Activate Cloud Shell</strong> (<img alt="Activate Cloud Shell icon" src="https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D" title="Activate Cloud Shell">). If prompted, click <strong>Continue</strong>.
+Cloud Shell opens at the bottom of the Cloud Console window.</p>
+<p>There are three buttons on the far right of the Cloud Shell toolbar:</p>
+<p><img alt="three icons on far right of Cloud Shell toolbar" src="https://cdn.qwiklabs.com/xHKpKKTXWBkXrdrB1yYpaJETcizw6kdzaLuO5%2FzddbU%3D" title="Cloud Shell Three Icons">
+sutil</p>
+<ul>
+<li>
+<strong>Minimize/Restore:</strong> The first one minimizes or restores the window, giving you full access to the Cloud Console without closing Cloud Shell.</li>
+<li>
+<strong>Open in a new window:</strong> Having Cloud Shell at the bottom of the Cloud Console is useful when you are issuing individual commands. However, sometimes you will be editing files or want to see the full output of a command. For these uses, this button pops the Cloud Shell out into a full-sized terminal window.</li>
+<li>
+<strong>Close terminal:</strong> This button closes Cloud Shell. Every time you close Cloud Shell, the virtual machine is reset and all machine context is lost.</li>
+</ul>
+</li>
+<li>
+<p>Close Cloud Shell now.</p>
+</li>
+</ol>
+<p><ql-multiple-select-probe answerindices="[0, 1, 3]" optiontitles='[
+"5 GB of persistent storage (/home)",
+"Command-line access to a free temporary Compute Engine VM",
+"A command-line tool that requires you to install Cloud SDK",
+"Built-in authorization for access to resources and instances"
+]' shuffle="" stem="Cloud Shell provides you with which of the following? (Select all that apply).">
+</ql-multiple-select-probe></p>
+<h2 id="step5">Task 3. Use Cloud Shell to create a Cloud Storage bucket</h2>
+<h3>Create a second bucket and verify in the Cloud Console</h3>
+<ol>
+<li>Open Cloud Shell again.</li>
+<li>Use the gcloud storage command to create another bucket. Replace [BUCKET_NAME] with a globally unique name (<strong>you can append a 2 to the globally unique bucket name you used previously</strong>):</li>
+</ol>
+<ql-code-block templated="">
+gcloud storage buckets create gs://[BUCKET_NAME]
+</ql-code-block>
+<ol start="3">
+<li>If prompted, click <strong>Authorize</strong>.</li>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Cloud Storage &gt; Bucket</strong>, or click <strong>Refresh</strong> if you are already in the Storage browser.
+The second bucket should be displayed in the <strong>Buckets</strong> list.</li>
+</ol>
+<ql-infobox>
+<strong>Note:</strong> You have performed equivalent actions using the Cloud Console and Cloud Shell. You created a bucket using the Cloud Console and another bucket using Cloud Shell.
+</ql-infobox>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="2">
+      Create a bucket using Cloud Shell
+</ql-activity-tracking>
+<h2 id="step6">Task 4. Explore more Cloud Shell features</h2>
+<h3>Upload a file</h3>
+<ol>
+<li>Open Cloud Shell.</li>
+<li>Click the <strong>More</strong> button (<img alt="More button" src="https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D" title="More">) in the Cloud Shell toolbar to display further options.</li>
+<li>Click <strong>Upload</strong>. Upload any file from your local machine to the Cloud Shell VM. This file will be referred to as [MY_FILE].</li>
+<li>In Cloud Shell, type <code>ls</code> to confirm that the file was uploaded.</li>
+<li>Copy the file into one of the buckets you created earlier in the lab.  Replace [MY_FILE] with the file you uploaded and [BUCKET_NAME] with one of your bucket names:</li>
+</ol>
+<ql-code-block templated="">
+gcloud storage cp [MY_FILE] gs://[BUCKET_NAME]
+</ql-code-block>
+<p>If your filename has whitespaces,  be sure to place single quotes around the filename. For example, <code>gcloud storage cp ‘my file.txt' gs://[BUCKET_NAME]</code></p>
+<ql-infobox>
+<strong>Note:</strong> You have uploaded a file to the Cloud Shell VM and copied it to a bucket.
+</ql-infobox>
+<ol start="6">
+<li>Explore the options available in Cloud Shell by clicking on different icons in the Cloud Shell toolbar.</li>
+<li>Close all the Cloud Shell sessions.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="3">
+      Upload a file to Storage bucket
+</ql-activity-tracking>
+<h2 id="step7">Task 5. Create a persistent state in Cloud Shell</h2>
+<p>In this section you will learn a best practice for using Cloud Shell. The gcloud command often requires you to specify values such as a <strong>Region</strong>, <strong>Zone</strong>, or <strong>Project ID</strong>. Entering them repeatedly increases the chance of making typing errors. If you use Cloud Shell frequently, you may want to set common values in environment variables and use them instead of typing the actual values.</p>
+<h3>Identify available regions</h3>
+<ol>
+<li>Open Cloud Shell from the Cloud Console. Note that this allocates a new VM for you.</li>
+<li>To list available regions, execute the following command:</li>
+</ol>
+<ql-code-block templated="">
+gcloud compute regions list
+</ql-code-block>
+<ol start="3">
+<li>Select a region from the list and note the value in any text editor. This region will now be referred to as [YOUR_REGION] in the remainder of the lab.</li>
+</ol>
+<h3>Create and verify an environment variable</h3>
+<ol>
+<li>Create an environment variable and replace [YOUR_REGION] with the region you selected in the previous step:</li>
+</ol>
+<ql-code-block templated="">
+INFRACLASS_REGION= [YOUR_REGION]
+</ql-code-block>
+<ol start="2">
+<li>Verify it with echo:</li>
+</ol>
+<ql-code-block templated="">
+echo $INFRACLASS_REGION
+</ql-code-block>
+<p>You can use environment variables like this in gcloud commands to reduce the opportunities for typos and so that you won't have to remember a lot of detailed information.</p>
+<ql-warningbox>
+<strong>Note:</strong> Every time you close Cloud Shell and reopen it, a new VM is allocated, and the environment variable you just set disappears. In the next steps, you create a file to set the value so that you won't have to enter the command each time Cloud Shell is reset.
+</ql-warningbox>
+<h3>Append the environment variable to a file</h3>
+<ol>
+<li>Create a subdirectory for materials used in this lab:</li>
+</ol>
+<ql-code-block templated="">
+mkdir infraclass
+</ql-code-block>
+<ol start="2">
+<li>Create a file called <code>config</code> in the infraclass directory:</li>
+</ol>
+<ql-code-block templated="">
+touch infraclass/config
+</ql-code-block>
+<ol start="3">
+<li>Append the value of your Region environment variable to the <code>config</code> file:</li>
+</ol>
+<ql-code-block templated="">
+echo INFRACLASS_REGION=$INFRACLASS_REGION &gt;&gt; ~/infraclass/config
+</ql-code-block>
+<ol start="4">
+<li>Create a second environment variable for your Project ID, replacing [YOUR_PROJECT_ID] with your Project ID. You can find the project ID on the Cloud Console Home page.</li>
+</ol>
+<ql-code-block templated="">
+INFRACLASS_PROJECT_ID=[YOUR_PROJECT_ID]
+</ql-code-block>
+<ol start="5">
+<li>Append the value of your Project ID environment variable to the <code>config</code> file:</li>
+</ol>
+<ql-code-block templated="">
+echo INFRACLASS_PROJECT_ID=$INFRACLASS_PROJECT_ID &gt;&gt; ~/infraclass/config
+</ql-code-block>
+<ol start="6">
+<li>Use the source command to set the environment variables, and use the echo command to verify that the project variable was set:</li>
+</ol>
+<ql-code-block templated="">
+source infraclass/config
+echo $INFRACLASS_PROJECT_ID
+</ql-code-block>
+<ql-warningbox>
+<strong>Note:</strong> This gives you a method to create environment variables and to easily recreate them if the Cloud Shell is recycled or reset. However, you will still need to remember to issue the source command each time Cloud Shell is opened.
+
+In the next step, you  modify the .profile file so that the source command is issued automatically every time a terminal to Cloud Shell is opened.
+</ql-warningbox>
+<ol start="7">
+<li>Close and re-open Cloud Shell. Then issue the echo command again:</li>
+</ol>
+<ql-code-block templated="">
+echo $INFRACLASS_PROJECT_ID
+</ql-code-block>
+<p>There will be no output because the environment variable no longer exists.</p>
+<h3>Modify the bash profile and create persistence</h3>
+<ol>
+<li>Edit the shell profile with the following command:</li>
+</ol>
+<ql-code-block templated="">
+nano .profile
+</ql-code-block>
+<ol start="2">
+<li>Add the following line to the end of the file:</li>
+</ol>
+<ql-code-block templated="">
+source infraclass/config
+</ql-code-block>
+<ol start="3">
+<li>Press <strong>Ctrl+O</strong>, <strong>ENTER</strong> to save the file, and then press <strong>Ctrl+X</strong> to exit nano.</li>
+<li>Close and then re-open Cloud Shell to reset the VM.</li>
+<li>Use the echo command to verify that the variable is still set:</li>
+</ol>
+<ql-code-block templated="">
+echo $INFRACLASS_PROJECT_ID
+</ql-code-block>
+<p>You should now see the expected value that you set in the config file.</p>
+<ql-warningbox>
+<strong>Note:</strong> If your Cloud Shell environment is ever corrupted, instructions on resetting it are in the Cloud Shell Documentation article titled <a href="https://cloud.google.com/shell/docs/resetting-cloud-shell" target="_blank">Disabling or Resetting Cloud Shell</a>.
+
+This will cause everything in your Cloud Shell environment to be set back to its original default state.
+</ql-warningbox>
+<p><ql-multiple-choice-probe answerindex="2" optiontitles='[
+".config",
+".bashrc",
+".profile",
+".my_variables"
+]' shuffle="" stem="To create a persistent state in Cloud Shell, which file would you configure?">
+</ql-multiple-choice-probe></p>
+<h2 id="step8">Task 6. Review the Google Cloud interface</h2>
+<p>Cloud Shell is an excellent interactive environment for exploring Google Cloud by using Google Cloud SDK commands like <code>gcloud</code> and <code>gcloud storage</code>.</p>
+<p>You can install the Google Cloud SDK on a computer or on a VM instance in Google Cloud. The gcloud and gcloud storage commands can be automated by using a scripting language like bash (Linux) or Powershell (Windows). You can also explore using the command-line tools in Cloud Shell, and then use the parameters as an implementation guide in the SDK using one of the supported languages.</p>
+<p>The Google Cloud interface consists of two parts: the Cloud Console and Cloud Shell.</p>
+<p>The Console:</p>
+<ul>
+<li>Provides a fast way to perform tasks.</li>
+<li>Presents options to you, instead of requiring you to know them.</li>
+<li>Performs behind-the-scenes validation before submitting the commands.</li>
+</ul>
+<p>Cloud Shell provides:</p>
+<ul>
+<li>Detailed control</li>
+<li>A complete range of options and features</li>
+<li>A path to automation through scripting</li>
+</ul>
+<h2 id="step9">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Objectives</a></li><li><a href="#step3">Task 1. Use the Cloud Console to create a bucket</a></li><li><a href="#step4">Task 2. Access Cloud Shell</a></li><li><a href="#step5">Task 3. Use Cloud Shell to create a Cloud Storage bucket</a></li><li><a href="#step6">Task 4. Explore more Cloud Shell features</a></li><li><a href="#step7">Task 5. Create a persistent state in Cloud Shell</a></li><li><a href="#step8">Task 6. Review the Google Cloud interface</a></li><li><a href="#step9">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab, you will become familiar with the Google Cloud web-based interface including Console, the  GUI (graphical user interface) environment, and Cloud Shell, the CLI (command line interface) environment.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+40m access
+&middot;
+20m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/1774">https://googlecoursera.qwiklabs.com/catalog_lab/1774</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="1774" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

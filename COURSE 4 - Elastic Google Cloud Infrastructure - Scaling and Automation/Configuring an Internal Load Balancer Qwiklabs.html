@@ -1,0 +1,1128 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Configuring an Internal Load Balancer | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-990e13ea9ea264da0ab8ee25376a474b85237e1e.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="dstexr+jBTMYq/K4t6Rf31P/rciv4Okt9UpO4Sai6zz4dgu7FVkWihefmnCWDXVyEVcbr19wtaiDPLo1quFqGg==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;barker&quot;,&quot;community_forum&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;used_in&quot;,&quot;content_provider_admin&quot;,&quot;program_announcements&quot;,&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;course_upgrade&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;program_learning_assignment&quot;,&quot;teams&quot;,&quot;peer_assignment&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;canonical_domain_redirect&quot;,&quot;alexandria_show_bundle_errors&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab, you create two managed instance groups in the same region. Then, you configure an Internal Load Balancer with the instances groups as the backends.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Configuring an Internal Load Balancer | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab, you create two managed instance groups in the same region. Then, you configure an Internal Load Balancer with the instances groups as the backends.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32684676?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32684676?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-da73f1d12b824417d3fa2956c31a2f0cb210429a.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="09325fec135d5419" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Configuring an Internal Load Balancer</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32684676?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32684676?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32684676?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32684676?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32684676?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32684676?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32684676?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32684676?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32684676?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32684676?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32684676?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32684676?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32684676?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32684676?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32684676?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32684676?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32684676?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32684676?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32684676?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+100/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Configure internal traffic and health check firewall rules
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Configure internal traffic and health check firewall rules' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create a NAT configuration using Cloud Router
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create a NAT configuration using Cloud Router' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Configure instance templates and create instance groups
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Configure instance templates and create instance groups' step_no='3'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-3'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Configure the internal load balancer
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Configure the internal load balancer' step_no='4'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-4'>
+25
+</span>
+/ 25
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Configuring an Internal Load Balancer&quot;,&quot;lab_name&quot;:&quot;Configuring an Internal Load Balancer&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32684676' data-lab-billing-limit='0.0' data-lab-duration='5400' data-lab-instance-id='83433477' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:true}' labDetails='[{&quot;text&quot;:&quot;Open Google Cloud console&quot;,&quot;property&quot;:&quot;console_url&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;href&quot;:&quot;https://accounts.google.com/AddSession?service=accountsettings\u0026sarp=1\u0026continue=https%3A%2F%2Fconsole.cloud.google.com%2Fhome%2Fdashboard%3Fproject%3Dqwiklabs-gcp-04-832c660ca9cf#Email=student-03-c4f7bd7255d7@qwiklabs.net&quot;,&quot;type&quot;:&quot;button&quot;},{&quot;label&quot;:&quot;Username&quot;,&quot;property&quot;:&quot;username&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;student-03-c4f7bd7255d7@qwiklabs.net&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Password&quot;,&quot;property&quot;:&quot;password&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;bTw6kpUbOnlb&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Project ID&quot;,&quot;property&quot;:&quot;project_id&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;value&quot;:&quot;qwiklabs-gcp-04-832c660ca9cf&quot;,&quot;type&quot;:&quot;credential&quot;}]' labTimer='{&quot;ticking&quot;:true,&quot;secondsRemaining&quot;:4145}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Configuring an Internal Load Balancer
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>1 hour 30 minutes</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32684676/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.4842'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Internal Load Balancing enables you to run and scale your services behind a private load balancing IP address that is accessible only to your internal virtual machine instances.</p>
+<p>In this lab, you create two managed instance groups in the same region. Then you configure and test an internal load balancer with the instances groups as the backends, as shown in this network diagram:</p>
+<p><img alt="Network architecture diagram" src="https://cdn.qwiklabs.com/FgrZkcSEqghVxKV14KPVgNzTUMo0lQfmqTgpG45%2BTYA%3D"></p>
+<h3>Objectives</h3>
+<p>In this lab, you will learn how to perform the following tasks:</p>
+<ul>
+<li>Create internal traffic and health check firewall rules.</li>
+<li>Create a NAT configuration using Cloud Router.</li>
+<li>Configure two instance templates.</li>
+<li>Create two managed instance groups.</li>
+<li>Configure and test an internal load balancer.</li>
+</ul>
+<h2 id="step2">Setup and requirements</h2>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step3">Task 1. Configure internal traffic and health check firewall rules</h2>
+<p>Configure firewall rules to allow internal traffic connectivity from sources in the 10.10.0.0/16 range. This rule allows incoming traffic from any client located in the subnet.</p>
+<p>Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load-balanced instances come from addresses in the ranges <strong>130.211.0.0/22</strong> and <strong>35.191.0.0/16</strong>. Your firewall rules must allow these connections.</p>
+<h3>Explore the my-internal-app network</h3>
+<p>The network <strong>my-internal-app</strong> with <strong>subnet-a</strong> and <strong>subnet-b</strong> and firewall rules for <strong>RDP</strong>, <strong>SSH</strong>, and <strong>ICMP</strong> traffic have been configured for you.</p>
+<ul>
+<li>
+<p>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>VPC network &gt; VPC networks</strong>.<br>
+Notice the <strong>my-internal-app</strong> network with its subnets: <strong>subnet-a</strong> and <strong>subnet-b</strong>.</p>
+<p>Each Google Cloud project starts with the <strong>default</strong> network. In addition, the <strong>my-internal-app</strong> network has been created for you as part of your network diagram.</p>
+<p>You will create the managed instance groups in <strong>subnet-a</strong> and <strong>subnet-b</strong>. Both subnets are in the <strong><ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable></strong> region because an internal load balancer is a regional service. The managed instance groups will be in different zones, making your service immune to zonal failures.</p>
+</li>
+</ul>
+<h3>Create the firewall rule to allow traffic from any sources in the 10.10.0.0/16 range</h3>
+<p>Create a firewall rule to allow traffic in the 10.10.0.0/16 subnet.</p>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>VPC network &gt; Firewall</strong>.<br>
+Notice the <strong>app-allow-icmp</strong> and <strong>app-allow-ssh-rdp</strong> firewall rules.</p>
+<p>These firewall rules have been created for you.</p>
+</li>
+<li>
+<p>Click <strong>Create Firewall Rule</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td>fw-allow-lb-access</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>my-internal-app</td>
+</tr>
+<tr>
+<td>Targets</td>
+<td>Specified target tags</td>
+</tr>
+<tr>
+<td>Target tags</td>
+<td>backend-service</td>
+</tr>
+<tr>
+<td>Source filter</td>
+<td>IPv4 ranges</td>
+</tr>
+<tr>
+<td>Source IPv4 ranges</td>
+<td>10.10.0.0/16</td>
+</tr>
+<tr>
+<td>Protocols and ports</td>
+<td>Allow all</td>
+</tr>
+
+</table>
+</li>
+</ol>
+<ql-infobox><strong>Note: </strong>Make sure to include the <strong>/16 </strong> in the <strong>Source IPv4 ranges</strong>.</ql-infobox>
+<ol start="4">
+<li>Click <strong>Create</strong>.</li>
+</ol>
+<h3>Create the health check rule</h3>
+<p>Create a firewall rule to allow health checks.</p>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>VPC network &gt; Firewall</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create Firewall Rule</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td>fw-allow-health-checks</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>my-internal-app</td>
+</tr>
+<tr>
+<td>Targets</td>
+<td>Specified target tags</td>
+</tr>
+<tr>
+<td>Target tags</td>
+<td>backend-service</td>
+</tr>
+<tr>
+<td>Source filter</td>
+<td>IPv4 Ranges</td>
+</tr>
+<tr>
+<td>Source IPv4 ranges</td>
+<td>130.211.0.0/22 <strong>and</strong> 35.191.0.0/16</td>
+</tr>
+<tr>
+<td>Protocols and ports</td>
+<td>Specified protocols and ports</td>
+</tr>
+
+</table>
+</li>
+</ol>
+<ql-infobox><strong>Note: </strong>Make sure to include the <strong>/22 </strong> and <strong>/16 </strong> in the <strong>Source IPv4 ranges</strong>.</ql-infobox>
+<ol start="4">
+<li>For <strong>tcp</strong>, check the checkbox and specify port <strong>80</strong>.</li>
+<li>Click <strong>Create</strong>.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="1">
+Configure internal traffic and health check firewall rules
+</ql-activity-tracking></p>
+<h2 id="step4">Task 2. Create a NAT configuration using Cloud Router</h2>
+<p>The Google Cloud VM backend instances that you setup in Task 3 will not be configured with external IP addresses.</p>
+<p>Instead, you will setup the Cloud NAT service to allow these VM instances to send outbound traffic only through the Cloud NAT, and receive inbound traffic through the load balancer.</p>
+<h3>Create the Cloud Router instance</h3>
+<ol>
+<li>
+<p>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>Network services &gt; Cloud NAT</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Get started</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Gateway name</td>
+<td>nat-config</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>my-internal-app</td>
+</tr>
+<tr>
+<td>Region</td>
+<td><ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable></td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Cloud Router</strong>, and select <strong>Create new router</strong>.</p>
+</li>
+<li>
+<p>For <strong>Name</strong>, type <strong>nat-router-<ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable></strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>In Create Cloud NAT gateway, click <strong>Create</strong>.</p>
+</li>
+</ol>
+<ql-infobox><strong>Note: </strong>Wait until the NAT Gateway Status changes to Running before moving onto the next task.</ql-infobox>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="2">
+Create a NAT configuration using Cloud Router
+</ql-activity-tracking></p>
+<h2 id="step5">Task 3. Configure instance templates and create instance groups</h2>
+<p>A managed instance group uses an instance template to create a group of identical instances. Use these to create the backends of the internal load balancer.</p>
+<p>This task has been performed for you at the start of this lab. You will need to SSH into each instance group VM and run the following command to setup the environment.</p>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.<br>
+Notice the instances that start with <strong>instance-group-1</strong> and <strong>instance-group-2</strong>.</p>
+</li>
+<li>
+<p>Select the SSH button next to <strong>instance-group-1</strong> to SSH into the VM.</p>
+</li>
+<li>
+<p>If prompted allow SSH-in-browser to connect to VMs, click <strong>Authorize</strong>.</p>
+</li>
+<li>
+<p>Run the following command to re-run the instance's startup script:</p>
+</li>
+</ol>
+<ql-code-block language="plaintext">
+sudo google_metadata_script_runner startup
+</ql-code-block>
+<ol start="5">
+<li>
+<p>Repeat the previous steps for <strong>instance-group-2</strong>.</p>
+</li>
+<li>
+<p>Wait for both startup scripts to finish executing, then close the SSH terminal to each VM. The output of the startup script should state the following:</p>
+</li>
+</ol>
+<ql-code-block language="bash" output="">
+Finished running startup scripts.
+</ql-code-block>
+
+<h3>Verify the backends</h3>
+<p>Verify that VM instances are being created in both subnets and create a utility VM to access the backends' HTTP sites.</p>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.<br>
+Notice the instances that start with <strong>instance-group-1</strong> and <strong>instance-group-2</strong>.</p>
+<p>These instances are in separate zones, and their internal IP addresses are part of the <strong>subnet-a</strong> and <strong>subnet-b</strong> CIDR blocks.</p>
+</li>
+<li>
+<p>Click <strong>Create Instance</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td>utility-vm</td>
+</tr>
+<tr>
+<td>Region</td>
+<td><ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable></td>
+</tr>
+<tr>
+<td>Zone</td>
+<td><ql-variable key="project_0.startup_script.third_zone" placeholder="Zone"></ql-variable></td>
+</tr>
+<tr>
+<td>Series</td>
+<td>E2</td>
+</tr>
+<tr>
+<td>Machine type</td>
+<td>e2-medium (2 vCPU, 4 GB memory)</td>
+</tr>
+<tr>
+<td>Boot disk</td>
+<td>Debian GNU/Linux 11 (bullseye)</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Advanced options</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Networking</strong>.</p>
+</li>
+<li>
+<p>For <strong>Network interfaces</strong>, click the dropdown to edit.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Network</td>
+<td>my-internal-app</td>
+</tr>
+<tr>
+<td>Subnetwork</td>
+<td>subnet-a</td>
+</tr>
+<tr>
+<td>Primary internal IP</td>
+<td>Ephemeral (Custom)</td>
+</tr>
+<tr>
+<td>Custom ephemeral IP address</td>
+<td>10.10.20.50</td>
+</tr>
+<tr>
+<td>External IPv4 address</td>
+<td>None</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Done</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>Note that the internal IP addresses for the backends are <strong>10.10.20.2</strong> and <strong>10.10.30.2</strong>.</p>
+</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>If these IP addresses are different, replace them in the two <b>curl</b> commands below.</ql-warningbox>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="3">
+Configure instance templates and create instance groups
+</ql-activity-tracking></p>
+<ol start="11">
+<li>
+<p>For <strong>utility-vm</strong>, click <strong>SSH</strong> to launch a terminal and connect.</p>
+</li>
+<li>
+<p>If prompted allow SSH-in-browser to connect to VMs, click <strong>Authorize</strong>.</p>
+</li>
+<li>
+<p>To verify the welcome page for <strong>instance-group-1-xxxx</strong>, run the following command:</p>
+</li>
+</ol>
+<ql-code-block language="plaintext">
+curl 10.10.20.2
+</ql-code-block>
+<p>The output should look like this.</p>
+<p><strong>Output:</strong></p>
+<ql-code-block language="plaintext" output="">
+&lt;h1&gt;Internal Load Balancing Lab&lt;/h1&gt;&lt;h2&gt;Client IP&lt;/h2&gt;Your IP address : 10.10.20.50&lt;h2&gt;Hostname&lt;/h2&gt;Server Hostname:
+ instance-group-1-1zn8&lt;h2&gt;Server Location&lt;/h2&gt;Region and Zone: us-central1-a
+</ql-code-block>
+<ol start="14">
+<li>To verify the welcome page for <strong>instance-group-2-xxxx</strong>, run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+curl 10.10.30.2
+</ql-code-block>
+<p>The output should look like this.</p>
+<p><strong>Output:</strong></p>
+<ql-code-block language="plaintext" output="">
+&lt;h1&gt;Internal Load Balancing Lab&lt;/h1&gt;&lt;h2&gt;Client IP&lt;/h2&gt;Your IP address : 10.10.20.50&lt;h2&gt;Hostname&lt;/h2&gt;Server Hostname:
+ instance-group-2-q5wp&lt;h2&gt;Server Location&lt;/h2&gt;Region and Zone: us-central1-b
+</ql-code-block>
+<p><ql-multiple-select-probe answerindices="[1, 2]" optiontitles='[
+"Client IP",
+"Server Hostname",
+"Server Location"
+]' shuffle="" stem="Which of these fields identify the location of the backend?">
+</ql-multiple-select-probe></p>
+<ql-infobox><strong>Note: </strong>This will be useful when verifying that the internal load balancer sends traffic to both backends.</ql-infobox>
+<ol start="15">
+<li>Close the SSH terminal to <strong>utility-vm</strong>:</li>
+</ol>
+<ql-code-block language="plaintext">
+exit
+</ql-code-block>
+<h2 id="step6">Task 4. Configure the internal load balancer</h2>
+<p>Configure the internal load balancer to balance traffic between the two backends (<strong>instance-group-1</strong> in <ql-variable key="project_0.startup_script.primary_zone" placeholder="Zone"></ql-variable> and <strong>instance-group-2</strong> in <ql-variable key="project_0.startup_script.secondary_zone" placeholder="Zone"></ql-variable>), as illustrated in the network diagram.</p>
+<p><img alt="Network diagram" src="https://cdn.qwiklabs.com/FgrZkcSEqghVxKV14KPVgNzTUMo0lQfmqTgpG45%2BTYA%3D"></p>
+<h3>Start the configuration</h3>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>Network Services &gt; Load balancing</strong>.</li>
+<li>Click <strong>Create load balancer</strong>.</li>
+<li>Under <strong>Network Load Balancer (TCP/SSL)</strong>, click <strong>Start configuration</strong>.</li>
+<li>For <strong>Internet facing or internal only</strong>, select <strong>Only between my VMs</strong>.</li>
+</ol>
+<ql-infobox><strong>Note: </strong>Choosing <b>Only between my VMs</b> makes this load balancer internal. This choice requires the backends to be in a single region (<ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable>) and does not allow offloading TCP processing to the load balancer.</ql-infobox>
+<ol start="5">
+<li>Click <strong>Continue</strong>.</li>
+<li>For <strong>Name</strong>, type <code>my-ilb</code>.</li>
+<li>For <strong>Region</strong>, type <strong><ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable></strong>.</li>
+<li>For <strong>Network</strong>, type <code>my-internal-app</code>.</li>
+</ol>
+<h3>Configure the regional backend service</h3>
+<p>The backend service monitors instance groups and prevents them from exceeding configured usage.</p>
+<ol>
+<li>
+<p>Click <strong>Backend configuration</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Instance group</td>
+<td>instance-group-1 (<ql-variable key="project_0.startup_script.primary_zone" placeholder="Zone"></ql-variable>)</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Done</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Add backend</strong>.</p>
+</li>
+<li>
+<p>For <strong>Instance group</strong>, select <strong>instance-group-2 (<ql-variable key="project_0.startup_script.secondary_zone" placeholder="Zone"></ql-variable>)</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Done</strong>.</p>
+</li>
+<li>
+<p>For <strong>Health Check</strong>, select <strong>Create a health check</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td>my-ilb-health-check</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>TCP</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>80</td>
+</tr>
+<tr>
+<td>Check interval</td>
+<td>10 sec</td>
+</tr>
+<tr>
+<td>Timeout</td>
+<td>5 sec</td>
+</tr>
+<tr>
+<td>Healthy threshold</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Unhealthy threshold</td>
+<td>3</td>
+</tr>
+
+</table>
+</li>
+</ol>
+<ql-infobox><strong>Note: </strong>Health checks determine which instances can receive new connections. This HTTP health check polls instances every 10 seconds, waits up to 5 seconds for a response, and treats 2 successful or 3 failed attempts as healthy threshold or unhealthy threshold, respectively.</ql-infobox>
+<ol start="9">
+<li>Click <strong>Save</strong>.</li>
+<li>Verify that there is a blue checkmark next to <strong>Backend configuration</strong> in the Cloud Console. If there isn't, double-check that you have completed all the steps above.</li>
+</ol>
+<h3>Configure the frontend</h3>
+<p>The frontend forwards traffic to the backend.</p>
+<ol>
+<li>
+<p>Click <strong>Frontend configuration</strong>.</p>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Subnetwork</td>
+<td>subnet-b</td>
+</tr>
+<tr>
+<td>Internal IP &gt; IP address</td>
+<td>Create IP address</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Specify the following, and leave the remaining settings as their defaults.</p>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td>Name</td>
+<td>my-ilb-ip</td>
+</tr>
+<tr>
+<td>Static IP address</td>
+<td>Let me choose</td>
+</tr>
+<tr>
+<td>Custom IP address</td>
+<td>10.10.30.5</td>
+</tr>
+
+</table>
+</li>
+<li>
+<p>Click <strong>Reserve</strong>.</p>
+</li>
+<li>
+<p>Under <strong>Ports</strong>, for <strong>Port number</strong>, type <code>80</code>.</p>
+</li>
+<li>
+<p>Click <strong>Done</strong>.</p>
+</li>
+</ol>
+<h3>Review and create the internal load balancer</h3>
+<ol>
+<li>Click <strong>Review and finalize</strong>.</li>
+<li>Review the <strong>Backend</strong> and <strong>Frontend</strong>.</li>
+<li>Click <strong>Create</strong>.<br>
+Wait for the load balancer to be created before moving to the next task.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="4">
+Configure the Internal Load Balancer
+</ql-activity-tracking></p>
+<h2 id="step7">Task 5. Test the internal load balancer</h2>
+<p>Verify that the <strong>my-ilb</strong> IP address forwards traffic to <strong>instance-group-1</strong> in <ql-variable key="project_0.startup_script.primary_zone" placeholder="Zone"></ql-variable> and <strong>instance-group-2</strong> in <ql-variable key="project_0.startup_script.secondary_zone" placeholder="Zone"></ql-variable>.</p>
+<h3>Access the internal load balancer</h3>
+<ol>
+<li>On the <strong>Navigation menu</strong>, click <strong>Compute Engine &gt; VM instances</strong>.</li>
+<li>For <strong>utility-vm</strong>, click <strong>SSH</strong> to launch a terminal and connect.</li>
+<li>If prompted allow SSH-in-browser to connect to VMs, click <strong>Authorize</strong>.</li>
+<li>To verify that the internal load balancer forwards traffic, run the following command:</li>
+</ol>
+<ql-code-block language="plaintext">
+curl 10.10.30.5
+</ql-code-block>
+<p>The output should look like this.</p>
+<p><strong>Output:</strong></p>
+<ql-code-block language="plaintext" output="">
+&lt;h1&gt;Internal Load Balancing Lab&lt;/h1&gt;&lt;h2&gt;Client IP&lt;/h2&gt;Your IP address : 10.10.20.50&lt;h2&gt;Hostname&lt;/h2&gt;Server Hostname:
+ instance-group-2-1zn8&lt;h2&gt;Server Location&lt;/h2&gt;Region and Zone: us-central1-b
+</ql-code-block>
+<ql-infobox><strong>Note: </strong>As expected, traffic is forwarded from the internal load balancer (10.10.30.5) to the backend.</ql-infobox>
+<ol start="5">
+<li>Run the same command a couple of times:</li>
+</ol>
+<ql-code-block language="plaintext">
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+</ql-code-block>
+<p>You should be able to see responses from <strong>instance-group-1</strong> in <ql-variable key="project_0.startup_script.primary_zone" placeholder="Zone"></ql-variable> and <strong>instance-group-2</strong> in <ql-variable key="project_0.startup_script.secondary_zone" placeholder="Zone"></ql-variable>. If not, run the command again.</p>
+<h2 id="step8">Congratulations!</h2>
+<p>In this lab, you created two managed instance groups in the <ql-variable key="project_0.startup_script.gcp_region" placeholder="Region"></ql-variable> region and a firewall rule to allow HTTP traffic to those instances and TCP traffic from the Google Cloud health checker. Then you configured and tested an internal load balancer for those instance groups.</p>
+<h2 id="step9">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Setup and requirements</a></li><li><a href="#step3">Task 1. Configure internal traffic and health check firewall rules</a></li><li><a href="#step4">Task 2. Create a NAT configuration using Cloud Router</a></li><li><a href="#step5">Task 3. Configure instance templates and create instance groups</a></li><li><a href="#step6">Task 4. Configure the internal load balancer</a></li><li><a href="#step7">Task 5. Test the internal load balancer</a></li><li><a href="#step8">Congratulations!</a></li><li><a href="#step9">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab, you create two managed instance groups in the same region. Then, you configure an Internal Load Balancer with the instances groups as the backends.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+2m setup
+&middot;
+90m access
+&middot;
+45m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/1168">https://googlecoursera.qwiklabs.com/catalog_lab/1168</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="1168" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

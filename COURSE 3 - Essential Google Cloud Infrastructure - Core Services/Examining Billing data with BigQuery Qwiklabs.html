@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Examining Billing data with BigQuery | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-990e13ea9ea264da0ab8ee25376a474b85237e1e.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="+pFiQet7R5KGTvH+qPwXKjEjE7zYtk8DZCDbs2u1qdUWhimgjR13IQMpovsFPdqWvMJiswq4MOEWTRBdjQVdIw==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;barker&quot;,&quot;community_forum&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;used_in&quot;,&quot;content_provider_admin&quot;,&quot;program_announcements&quot;,&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;course_upgrade&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;program_learning_assignment&quot;,&quot;teams&quot;,&quot;peer_assignment&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;canonical_domain_redirect&quot;,&quot;alexandria_show_bundle_errors&quot;,&quot;search_updates&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab you will create datasets and tables, import data from billing reports, and conduct a variety of queries on the data using BigQuery.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Examining Billing data with BigQuery | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab you will create datasets and tables, import data from billing reports, and conduct a variety of queries on the data using BigQuery.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32664882?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32664882?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-da73f1d12b824417d3fa2956c31a2f0cb210429a.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="882a2c8e4ef533de" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Examining Billing data with BigQuery</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32664882?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32664882?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32664882?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32664882?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32664882?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32664882?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32664882?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32664882?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32664882?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32664882?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32664882?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32664882?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32664882?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32664882?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32664882?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32664882?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32664882?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32664882?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32664882?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+100/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Use BigQuery to import data
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Use BigQuery to import data' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+50
+</span>
+/ 50
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Compose a simple query
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Compose a simple query' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+50
+</span>
+/ 50
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Examining Billing data with BigQuery&quot;,&quot;lab_name&quot;:&quot;Examining Billing data with BigQuery&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32664882' data-lab-billing-limit='0.0' data-lab-duration='3600' data-lab-instance-id='83376819' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:true}' labDetails='[{&quot;text&quot;:&quot;Open Google Cloud console&quot;,&quot;property&quot;:&quot;console_url&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;href&quot;:&quot;https://accounts.google.com/AddSession?service=accountsettings\u0026sarp=1\u0026continue=https%3A%2F%2Fconsole.cloud.google.com%2Fhome%2Fdashboard%3Fproject%3Dqwiklabs-gcp-01-3fdb05dca688#Email=student-04-fecb33a0666c@qwiklabs.net&quot;,&quot;type&quot;:&quot;button&quot;},{&quot;label&quot;:&quot;Username&quot;,&quot;property&quot;:&quot;username&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;student-04-fecb33a0666c@qwiklabs.net&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Password&quot;,&quot;property&quot;:&quot;password&quot;,&quot;resource&quot;:&quot;user_0&quot;,&quot;value&quot;:&quot;hRCZUCvUQWVC&quot;,&quot;type&quot;:&quot;credential&quot;},{&quot;label&quot;:&quot;Project ID&quot;,&quot;property&quot;:&quot;project_id&quot;,&quot;resource&quot;:&quot;project_0&quot;,&quot;value&quot;:&quot;qwiklabs-gcp-01-3fdb05dca688&quot;,&quot;type&quot;:&quot;credential&quot;}]' labTimer='{&quot;ticking&quot;:true,&quot;secondsRemaining&quot;:3210}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Examining Billing data with BigQuery
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>1 hour</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32664882/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.5812'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>In this lab, you learn how to use BigQuery to analyze billing data.</p>
+<h3>Objectives</h3>
+<p>In this lab, you learn how to perform the following tasks:</p>
+<ul>
+<li>Sign in to BigQuery from the Cloud Console</li>
+<li>Create a dataset</li>
+<li>Create a table</li>
+<li>Import data from a billing CSV file stored in a bucket</li>
+<li>Run complex queries on a larger dataset</li>
+</ul>
+<h2 id="step2">Setup and requirements</h2>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step3">Task 1. Use BigQuery to import data</h2>
+<h3><strong>Sign in to BigQuery and create a dataset</strong></h3>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> ( <img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>BigQuery</strong>.</li>
+<li>If prompted, click <strong>Done</strong>.</li>
+<li>Click on the <strong>View actions</strong> icon next to your <strong>project ID</strong> (starts with qwiklabs-gcp) and click <strong>Create dataset</strong>.</li>
+</ol>
+<ql-infobox><strong>Note: </strong>You can export billing data directly to BigQuery as outlined in the <a href="https://cloud.google.com/billing/docs/how-to/export-data-bigquery" target="_blank">Export Cloud Billing data to BigQuery Guide</a>. However, for the purposes of this lab, a sample CSV billing file has been prepared for you. It is located in a Cloud Storage bucket where it is accessible to your student account. You will import this billing information into a BigQuery table and examine it.</ql-infobox>
+<ol start="4">
+<li>Specify the following:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Dataset ID:</strong></td>
+<td><strong>imported_billing_data</strong></td>
+</tr>
+<tr>
+<td><strong>Data location:</strong></td>
+<td><strong>US</strong></td>
+</tr>
+<tr>
+<td><strong>Default maximum table age (check Enable table expiration):</strong></td>
+<td>
+<strong>1</strong> days (Default maximum table age)</td>
+</tr>
+
+</table>
+<ol start="5">
+<li>Click <strong>Create Dataset</strong>. You should see <strong>imported_billing_data</strong> in the left pane.</li>
+</ol>
+<h3><strong>Create a table and import</strong></h3>
+<ol>
+<li>Click on the <strong>View actions</strong> icon next to your <strong>imported_billing_data</strong> dataset, and click <strong>Open</strong> and then click <strong>Create Table</strong> to create a new table.</li>
+<li>For <strong>Source</strong>, specify the following, and leave the remaining settings as their defaults:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Create table from:</strong></td>
+<td><strong>Google Cloud Storage</strong></td>
+</tr>
+<tr>
+<td><strong>Select file from GCS bucket</strong></td>
+<td><code>cloud-training/archinfra/export-billing-example.csv</code></td>
+</tr>
+<tr>
+<td><strong>File format</strong></td>
+<td><strong>CSV</strong></td>
+</tr>
+
+</table>
+<ol start="3">
+<li>For <strong>Destination</strong>, specify the following, and leave the remaining settings as their defaults:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Table name</strong></td>
+<td><strong>sampleinfotable</strong></td>
+</tr>
+<tr>
+<td><strong>Table type</strong></td>
+<td><strong>Native table</strong></td>
+</tr>
+
+</table>
+<ol start="4">
+<li>Under <strong>Schema</strong> check <strong>Auto detect</strong>.</li>
+<li>Open <strong>Advanced options</strong>.</li>
+<li>Under <strong>Header rows to skip</strong> specify <strong>1</strong>.</li>
+<li>Click <strong>Create Table</strong>.
+After the job is completed, the table appears below the dataset in the left pane.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="1">
+Use BigQuery to import data
+</ql-activity-tracking></p>
+<h2 id="step4">Task 2. Examine the table</h2>
+<ol>
+<li>Click <strong>sampleinfotable</strong>.</li>
+</ol>
+<ql-infobox><strong>Note: </strong>This displays the schema that BigQuery automatically created based on the data it found in the imported CSV file. Notice that there are strings, integers, timestamps, and floating values.</ql-infobox>
+<ol start="2">
+<li>Click <strong>Details</strong>.
+As you can see in <strong>Number of Rows</strong>, this is a relatively small table with 44 rows.</li>
+<li>Click <strong>Preview</strong>.</li>
+<li>Locate the row that has the <strong>Description:</strong> Network Internet Ingress from EMEA to Americas.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="1" optiontitles='[
+"9,738 bytes",
+"9,738,199 bytes",
+"9 bytes",
+"9,738,199,000 bytes"
+]' stem="What was the total consumption and units consumed?">
+</ql-multiple-choice-probe></p>
+<ol start="5">
+<li>Scroll to the <strong>Cost</strong> column.</li>
+</ol>
+<ql-infobox><strong>Note: </strong>The cost was 0.0, so with an ingress of 9.7 Mbytes, traffic from EMEA to the Americas had no charge.
+</ql-infobox>
+<ol start="6">
+<li>Locate the row that has the <strong>Description:</strong> Network Internet Egress from Americas to China.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="0" optiontitles='[
+"5,542 bytes exited the Americas and was transferred to China at a charge of 1e-06.",
+"5,542,000 bytes exited the Americas and was transferred to China at a charge of 1e-06.",
+"5,542 bytes exited China and was transferred to the Americas at a charge of 1e-06."
+]' stem="Can you interpret the information?">
+</ql-multiple-choice-probe></p>
+<h2 id="step5">Task 3. Compose a simple query</h2>
+<p>When you reference a table in a query, both the dataset ID and table ID must be specified; the project ID is optional.</p>
+<ql-infobox><strong>Note: </strong>If the project ID is not specified, BigQuery will default to the current project.</ql-infobox>
+<p>All the information you need is available in the BigQuery interface. In the column on the left, you see the dataset ID (imported_billing_data) and table ID (sampleinfotable).</p>
+<p>Recall that clicking on the table name brings up the <strong>Schema</strong> with all of the field names.</p>
+<p>Now construct a simple query based on the <strong>Cost</strong> field.</p>
+<ol>
+<li>Click  <strong>Compose New Query</strong>.</li>
+<li>Paste the following in Query Editor:</li>
+</ol>
+<ql-code-block language="bash">
+SELECT * FROM `imported_billing_data.sampleinfotable`
+WHERE Cost &gt; 0
+</ql-code-block>
+<ol start="3">
+<li>Click <strong>Run</strong>.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="2" optiontitles='[
+"104 rows",
+"10 rows",
+"20 rows",
+"44 rows"
+]' stem="How many rows had cost greater than 0?">
+</ql-multiple-choice-probe></p>
+<ql-infobox><p><strong>Note: </strong>How many rows involved non-zero charges?  </p>
+The table shows 20 rows and they all have non-zero charges.</ql-infobox>
+<p>Click <em>Check my progress</em> to verify the objective.
+<ql-activity-tracking step="2">
+Compose a simple query
+</ql-activity-tracking></p>
+<h2 id="step6">Task 4. Analyze a large billing dataset with SQL</h2>
+<p>In the next activity, you use BigQuery to analyze a sample dataset with 22,537 lines of billing data.</p>
+<ql-infobox><strong>Note: </strong>The <b>cloud-training-prod-bucket.arch_infra.billing_data</b> dataset used in this task is shared with the public. For more information on public datasets and how to share datasets with the public, refer to the <a href="https://cloud.google.com/bigquery/public-data/#sharing_a_dataset_with_the_public" target="_blank">BigQuery public datasets Guide</a>.</ql-infobox>
+<ol>
+<li>For New Query, paste the following in Query Editor:</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  product,
+  resource_type,
+  start_time,
+  end_time,
+  cost,
+  project_id,
+  project_name,
+  project_labels_key,
+  currency,
+  currency_conversion_rate,
+  usage_amount,
+  usage_unit
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+</ql-code-block>
+<ol start="2">
+<li>
+<p>Click <strong>Run</strong>.
+Verify that the resulting table has 22,537 lines of billing data.</p>
+</li>
+<li>
+<p>To find the latest 100 records where there were charges (cost &gt; 0), for New Query, paste the following in Query Editor:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  product,
+  resource_type,
+  start_time,
+  end_time,
+  cost,
+  project_id,
+  project_name,
+  project_labels_key,
+  currency,
+  currency_conversion_rate,
+  usage_amount,
+  usage_unit
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+WHERE
+  Cost &gt; 0
+ORDER BY end_time DESC
+LIMIT
+  100
+</ql-code-block>
+<ol start="4">
+<li>Click <strong>Run</strong>.</li>
+<li>To find all charges that were more than 3 dollars, for Compose New Query, paste the following in Query Editor:</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  product,
+  resource_type,
+  start_time,
+  end_time,
+  cost,
+  project_id,
+  project_name,
+  project_labels_key,
+  currency,
+  currency_conversion_rate,
+  usage_amount,
+  usage_unit
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+WHERE
+  cost &gt; 3
+</ql-code-block>
+<ol start="6">
+<li>
+<p>Click <strong>Run</strong>.</p>
+</li>
+<li>
+<p>To find the product with the most records in the billing data, for New Query, paste the following in Query Editor:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  product,
+  COUNT(*) AS billing_records
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+GROUP BY
+  product
+ORDER BY billing_records DESC
+</ql-code-block>
+<ol start="8">
+<li>Click <strong>Run</strong>.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="1" optiontitles='[
+"Cloud SQL has 10,271 records",
+"Cloud Pub/Sub has 10,271 records",
+"Stackdriver has 11,271 records"
+]' stem="Which product had the most billing records?">
+</ql-multiple-choice-probe></p>
+<ol start="9">
+<li>To find the most frequently used product costing more than 1 dollar, for New Query, paste the following in Query Editor:</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  product,
+  COUNT(*) AS billing_records
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+WHERE
+  cost &gt; 1
+GROUP BY
+  product
+ORDER BY
+  billing_records DESC
+</ql-code-block>
+<ol start="10">
+<li>Click <strong>Run</strong>.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="0" optiontitles='[
+"Compute Engine has 17 charges costing more than 1 dollar.",
+"Kubernetes Engine has 7 charges costing more than 1 dollar.",
+"Cloud SQL has 15 charges costing more than 1 dollar."
+]' stem="Which product had the most billing records of over $1">
+</ql-multiple-choice-probe></p>
+<ol start="11">
+<li>To find the most commonly charged unit of measure, for Compose New Query, paste the following in Query Editor:</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  usage_unit,
+  COUNT(*) AS billing_records
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+WHERE cost &gt; 0
+GROUP BY
+  usage_unit
+ORDER BY
+  billing_records DESC
+</ql-code-block>
+<ol start="12">
+<li>Click <strong>Run</strong>.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="2" optiontitles='[
+"Requests were the most commonly charged unit of measure with 6,539 requests.",
+"Requests were the most commonly charged unit of measure with 504 requests.",
+"Byte-seconds were the most commonly charged unit of measure with 2,937 requests."
+]' stem="What was the most commonly charged unit of measure?">
+</ql-multiple-choice-probe></p>
+<ol start="13">
+<li>To find the product with the highest aggregate cost, for New Query, paste the following in Query Editor:</li>
+</ol>
+<ql-code-block language="bash">
+SELECT
+  product,
+  ROUND(SUM(cost),2) AS total_cost
+FROM
+  `cloud-training-prod-bucket.arch_infra.billing_data`
+GROUP BY
+  product
+ORDER BY
+  total_cost DESC
+</ql-code-block>
+<ol start="14">
+<li>Click <strong>Run</strong>.</li>
+</ol>
+<p><ql-multiple-choice-probe answerindex="0" optiontitles='[
+"Compute Engine has an aggregate cost of $112.02.",
+"Cloud SQL has an aggregate cost of $47.37",
+"BigQuery has an aggregate cost of $114.02"
+]' stem="Which product has the highest total cost?">
+</ql-multiple-choice-probe></p>
+<h2 id="step7">Task 5. Review</h2>
+<p>In this lab, you imported billing data into BigQuery that had been generated as a CSV file. You ran a simple query on the file. Then you accessed a shared dataset containing more than 22,000 records of billing information. You ran a variety of queries on that data to explore how you can use BigQuery to ask and answer questions by running queries.</p>
+<h2 id="step8">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Setup and requirements</a></li><li><a href="#step3">Task 1. Use BigQuery to import data</a></li><li><a href="#step4">Task 2. Examine the table</a></li><li><a href="#step5">Task 3. Compose a simple query</a></li><li><a href="#step6">Task 4. Analyze a large billing dataset with SQL</a></li><li><a href="#step7">Task 5. Review</a></li><li><a href="#step8">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab you will create datasets and tables, import data from billing reports, and conduct a variety of queries on the data using BigQuery.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+60m access
+&middot;
+30m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/1784">https://googlecoursera.qwiklabs.com/catalog_lab/1784</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="1784" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

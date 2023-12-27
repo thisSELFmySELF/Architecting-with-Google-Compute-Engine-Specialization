@@ -1,0 +1,900 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Deploying Apps to Google Cloud | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-383ac8dce987ca8ef68702cd64980b76aa83af6d.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="BdBqrjKOrUxcmxl+tJ0+sbjA84qOIjf3tXyQ3FFO8HRRjRKlgp/VfXLCGgSfCbff9hCRNl9QFBA9lLnah1IXpw==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:1,&quot;variant&quot;:&quot;no_recaptcha&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;search_updates&quot;,&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;alexandria_show_bundle_errors&quot;,&quot;program_announcements&quot;,&quot;canonical_domain_redirect&quot;,&quot;program_learning_assignment&quot;,&quot;barker&quot;,&quot;used_in&quot;,&quot;course_upgrade&quot;,&quot;community_forum&quot;,&quot;peer_assignment&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;teams&quot;,&quot;content_provider_admin&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab, you will deploy applications to the Google Cloud services App Engine, Kubernetes Engine, and Cloud Run.' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Deploying Apps to Google Cloud | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab, you will deploy applications to the Google Cloud services App Engine, Kubernetes Engine, and Cloud Run.' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32598681?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32598681?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-29602dc272dc25b87d80aad082aeac190a74d2ab.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="d9994bd8a51d48f6" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Deploying Apps to Google Cloud</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32598681?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32598681?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32598681?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32598681?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32598681?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32598681?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32598681?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32598681?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32598681?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32598681?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32598681?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32598681?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32598681?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32598681?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32598681?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32598681?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32598681?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32598681?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32598681?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+—/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Deploy to App Engine
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Deploy to App Engine' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+</span>
+/ 30
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Deploy to Kubernetes Engine
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Deploy to Kubernetes Engine' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+</span>
+/ 30
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Deploy to Cloud Run
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Deploy to Cloud Run' step_no='3'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-3'>
+</span>
+/ 40
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Deploying Apps to Google Cloud&quot;,&quot;lab_name&quot;:&quot;Deploying Apps to Google Cloud&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32598681' data-lab-billing-limit='0.0' data-lab-duration='5400' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:false}' labDetails='[]' labTimer='{&quot;ticking&quot;:false,&quot;secondsRemaining&quot;:5400}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Deploying Apps to Google Cloud
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>1 hour 30 minutes</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32598681/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.2804'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>In this lab, you will deploy applications to the Google Cloud services App Engine, Kubernetes Engine, and Cloud Run.</p>
+<p><img alt="Google Cloud services App Engine, Kubernetes Engine, and Cloud Run architecture" src="https://cdn.qwiklabs.com/ksw3Wil8kfv0wY5lv8G6Hzwm7cSgx%2F2Fyo%2Fo4BTcL6I%3D"></p>
+<h3>Objectives</h3>
+<p>In this lab, you will learn how to perform the following tasks:</p>
+<ul>
+<li>Download a sample app from GitHub</li>
+<li>Deploy to App Engine</li>
+<li>Deploy to Kubernetes Engine</li>
+<li>Deploy to Cloud Run</li>
+</ul>
+<h2 id="step2">Set up your lab environment</h2>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step3">Task 1. Download a sample app from GitHub</h2>
+<p>Download a sample application from GitHub and preview it in Cloud Shell.</p>
+<ol>
+<li>
+<p>In the Cloud Console, click <strong>Activate Cloud Shell</strong> (<img alt="Activate Cloud Shell icon" src="https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D" title="Cloud Shell">).</p>
+</li>
+<li>
+<p>If prompted, click <strong>Continue</strong>.</p>
+</li>
+<li>
+<p>To create a new folder, run the following command:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+mkdir gcp-course
+</ql-code-block>
+<ol start="4">
+<li>Change to the folder you just created:</li>
+</ol>
+<ql-code-block language="bash">
+cd gcp-course
+</ql-code-block>
+<ol start="5">
+<li>Clone a simple Python Flask app from GitHub:</li>
+</ol>
+<ql-code-block language="bash">
+git clone https://GitHub.com/GoogleCloudPlatform/training-data-analyst.git
+</ql-code-block>
+<ol start="6">
+<li>Change to the  <code>deploying-apps-to-gcp</code> folder:</li>
+</ol>
+<ql-code-block language="bash">
+cd training-data-analyst/courses/design-process/deploying-apps-to-gcp
+</ql-code-block>
+<ol start="7">
+<li>To test the program, enter the following command to build a Docker container of the image:</li>
+</ol>
+<ql-code-block language="bash">
+docker build -t test-python .
+</ql-code-block>
+<ol start="8">
+<li>To run the Docker image, enter the following command:</li>
+</ol>
+<ql-code-block language="bash">
+docker run --rm -p 8080:8080 test-python
+</ql-code-block>
+<ol start="9">
+<li>To see the program running, click  <strong>Web Preview</strong> (<img alt="Web Preview icon" src="https://cdn.qwiklabs.com/7b9oXblGsiFuNK7hmDZjFB%2B7Lrwdv5T64bbmo8X9FAo%3D" title="Web Preview">) in the toolbar of Google Cloud Shell. Then, select <strong>Preview on port 8080</strong>.</li>
+</ol>
+<p>The program should be displayed in a new browser tab.</p>
+<ol start="10">
+<li>In Cloud Shell, type <code>Ctrl+C</code> to stop the program.</li>
+</ol>
+<h2 id="step4">Task 2. Deploy to App Engine</h2>
+<p>App Engine is a completely automated deployment platform. It supports many languages, including Python, Java, JavaScript, and Go. To use it, you create a configuration file and deploy your applications with a couple of simple commands. In this task, you create a file named <em>app.yaml</em> and deploy it to App Engine.</p>
+<ol>
+<li>In Cloud Shell, click <strong>Open Editor</strong> (<img alt="Cloud Shell Editor icon" src="https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D" title="Cloud Shell Editor">), then click <strong>Open in a new window</strong> if required.</li>
+<li>Select the <code>gcp-course/training-data-analyst/courses/design-process/deploying-apps-to-gcp</code> folder in the explorer tree on the left.</li>
+<li>From the <strong>File</strong> menu, select <strong>New File</strong>, and name the file <strong>app.yaml</strong>. Then click <strong>Ok</strong>.</li>
+<li>Paste the following into the file you just created:</li>
+</ol>
+<ql-code-block language="bash">
+runtime: python39
+</ql-code-block>
+<ol start="5">
+<li>
+<strong>Save</strong> your changes.</li>
+</ol>
+<ql-infobox><strong>Note:</strong> There are other settings you can add to the app.yaml file, but in this case only the language runtime is required.
+</ql-infobox>
+<ol start="6">
+<li>In a project, an App Engine application has to be created. This is done just once using the <code>gcloud app create</code> command and specifying the region where you want the app to be created. Enter the following command:</li>
+</ol>
+<ql-code-block language="bash" templated="">
+  gcloud app create --region={{{project_0.startup_script.app_region| Region}}}
+  </ql-code-block>
+<ol start="7">
+<li>Now deploy your app with the following command:</li>
+</ol>
+<ql-code-block language="bash">
+gcloud app deploy --version=one --quiet
+</ql-code-block>
+<ql-infobox><strong>Note:</strong> This command will take a couple of minutes to complete.</ql-infobox>
+<ol start="8">
+<li>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>App Engine &gt; Dashboard</strong>. In the upper-right corner of the dashboard is a link to your application, similar to this:</li>
+</ol>
+<p><img alt="Example of the application link" src="https://cdn.qwiklabs.com/UwT1vHycOU7L8v7VSeCXok%2BAHhh8iDU2p18bj0XSO3I%3D"></p>
+<ql-infobox><strong>Note:</strong> By default, the URL to an App Engine application is in the form of <code>https://project-id.appspot.com</code>.
+</ql-infobox>
+<ol start="9">
+<li>
+<p>Click on the link to test your program.</p>
+</li>
+<li>
+<p>Make a change to the program to see how easy the App Engine makes managing versions.</p>
+</li>
+<li>
+<p>In the code editor, expand the <code>training-data-analyst/courses/design-process/deploying-apps-to-gcp</code> folder in the navigation pane on the left. Then, click <strong>main.py</strong> to open it.</p>
+</li>
+<li>
+<p>In the <strong>main()</strong> function, change the title to <code>Hello App Engine</code> as shown below:</p>
+</li>
+</ol>
+<ql-code-block output="">
+@app.route("/")
+def main():
+    model = {"title" "Hello App Engine"}
+    return render_template('index.html', model=model)
+</ql-code-block>
+<ol start="13">
+<li>
+<p>Click <strong>File &gt; Save</strong> in the code editor toolbar to save your change.</p>
+</li>
+<li>
+<p>Now, deploy version two with the following command:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+gcloud app deploy --version=two --no-promote --quiet
+</ql-code-block>
+<ql-infobox><strong>Note:</strong> The <code>--no-promote</code> parameter tells App Engine to continue serving requests with the old version. This allows you to test the new version before putting it into production.
+</ql-infobox>
+<ol start="15">
+<li>
+<p>When the command completes, return to the App Engine dashboard. Click the link again, and version one will still be returned. It should return <code>Hello GCP</code>. This is because of the <code>--no-promote</code> parameter in the previous command.</p>
+</li>
+<li>
+<p>On the left, click the <strong>Versions</strong> tab. Notice that two versions are listed.</p>
+</li>
+</ol>
+<ql-infobox><strong>Note:</strong> You might have to click <strong>Refresh</strong> to see version <b>two</b>.</ql-infobox>
+<ol start="17">
+<li>
+<p>Click on the version <strong>two</strong> link to test it. It should return <code>Hello App Engine</code>.</p>
+</li>
+<li>
+<p>To migrate production traffic to version two, click  <strong>Split Traffic</strong> at the top. Change the version to two, and click <strong>Save</strong>.</p>
+</li>
+<li>
+<p>Give it a minute to complete. Refresh the browser tab that earlier returned <code>Hello GCP</code>. It should now return the new version.</p>
+</li>
+</ol>
+<p>Click <strong>Check my progress</strong> to verify the objective.
+<ql-activity-tracking step="1">
+Deploy to App Engine
+</ql-activity-tracking></p>
+<h2 id="step5">Task 3. Deploy to Kubernetes Engine with Cloud Build and Artifact Registry</h2>
+<p>Kubernetes Engine allows you to create a cluster of machines and deploy any number of applications to it. Kubernetes abstracts the details of managing machines and allows you to automate the deployment of your applications with simple CLI commands.</p>
+<p>To deploy an application to Kubernetes, you first need to create the cluster. Then you need to add a configuration file for each application you will deploy to the cluster.</p>
+<ol>
+<li>
+<p>On the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Kubernetes Engine</strong>. If a message appears saying the Kubernetes API is being initialized, wait for it to complete.</p>
+</li>
+<li>
+<p>Click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>Accept all the defaults, and click <strong>Create</strong>.
+It will take a couple of minutes for the Kubernetes Engine cluster to be created. When the cluster is ready, a green check appears.</p>
+</li>
+<li>
+<p>Click the three dots to the right of the cluster and then click <strong>Connect</strong>.</p>
+</li>
+<li>
+<p>In the <strong>Connect to the cluster</strong> screen, click <strong>Run in Cloud Shell</strong>. This opens Cloud Shell with the connect command entered automatically.</p>
+</li>
+<li>
+<p>Press <strong>Enter</strong> to connect to the cluster.</p>
+</li>
+<li>
+<p>To test your connection, enter the following command:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+kubectl get nodes
+</ql-code-block>
+<p>This command simply shows the machines in your cluster. If it works, you're connected.</p>
+<ol start="8">
+<li>In Cloud Shell, click <strong>Open Editor</strong> (<img alt="Cloud Shell Editor icon" src="https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D" title="Cloud Shell Editor">).</li>
+<li>Expand the <code>training-data-analyst/courses/design-process/deploying-apps-to-gcp</code> folder in the navigation pane on the left. Then, click <strong>main.py</strong> to open it.</li>
+<li>In the <strong>main()</strong> function, change the title to <code>Hello Kubernetes Engine</code> as shown below:</li>
+</ol>
+<ql-code-block output="">
+@app.route("/")
+def main():
+    model = {"title" "Hello Kubernetes Engine"}
+    return render_template('index.html', model=model)
+</ql-code-block>
+<ol start="11">
+<li>
+<strong>Save</strong> your change.</li>
+<li>Add a file named <code>kubernetes-config.yaml</code> to the  <code>training-data-analyst/courses/design-process/deploying-apps-to-gcp</code> folder.</li>
+<li>Paste the following code in that file to configure the application:</li>
+</ol>
+<ql-code-block language="bash">
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-deployment
+  labels:
+    app: devops
+    tier: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devops
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: devops
+        tier: frontend
+    spec:
+      containers:
+      - name: devops-demo
+        image: &lt;YOUR IMAGE PATH HERE&gt;
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-deployment-lb
+  labels:
+    app: devops
+    tier: frontend-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: devops
+    tier: frontend
+</ql-code-block>
+<ql-infobox><p><strong>Note:</strong> In the first section of the YAML file above, you are configuring a deployment. In this case, you are deploying 3 instances of your Python web app. Notice the image attribute. You will update this value with your image in a minute after you build it. In the second section, you are configuring a service of the type "load balancer". The load balancer will have a public IP address. Users will access your application through the load balancer.</p>
+<p>For more information on Kubernetes deployments and services, see the links below:</p>
+<ul>
+<li>
+<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" target="\_blank">Kubernetes Deployments page</a> </li>
+<li><a href="https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/" target="\_blank">Kubernetes Create an External Load Balancer page</a></li>
+</ul>
+</ql-infobox>
+<ol start="14">
+<li>Enter the following command to create an Artifact Registry repository named devops-demo:</li>
+</ol>
+<ql-code-block language="bash">
+gcloud artifacts repositories create devops-demo \
+    --repository-format=docker \
+    --location=us-central1
+</ql-code-block>
+<ol start="15">
+<li>To configure Docker to authenticate to the Artifact Registry Docker repository, enter the following command:</li>
+</ol>
+<ql-code-block language="bash">
+gcloud auth configure-docker us-central1-docker.pkg.dev
+</ql-code-block>
+<ol start="14">
+<li>To use Kubernetes Engine, you need to build a Docker image. Enter the following commands to use Cloud Build to create the image and store it in Artifact Registry:</li>
+</ol>
+<ql-code-block language="bash">
+cd ~/gcp-course/training-data-analyst/courses/design-process/deploying-apps-to-gcp
+gcloud builds submit --tag us-central1-docker.pkg.dev/$DEVSHELL_PROJECT_ID/devops-demo/devops-image:v0.2 .
+</ql-code-block>
+<ol start="15">
+<li>
+<p>When the previous command completes, the image name will be listed in the output. The image name is in the form <code>us-central1-docker.pkg.dev/PROJECT_ID/devops-demo/devops-image:v0.2</code>.</p>
+</li>
+<li>
+<p>Highlight your image name and copy it to the clipboard. Paste that value in the <code>kubernetes-config.yaml</code> file, overwriting the string <code>&lt;YOUR IMAGE PATH HERE&gt;.</code></p>
+</li>
+</ol>
+<p>You should see something similar to below:</p>
+<ql-code-block output="">
+spec:
+  containers:
+  - name: devops-demo
+    image: us-central1-docker.pkg.dev/PROJECT_ID/devops-demo/devops-image:v0.2
+    ports:
+</ql-code-block>
+<ol start="17">
+<li>Enter the following Kubernetes command to deploy your application:</li>
+</ol>
+<ql-code-block language="bash">
+kubectl apply -f kubernetes-config.yaml
+</ql-code-block>
+<ol start="18">
+<li>In the configuration file, three replicas of the application were specified. Type the following command to see whether three instances have been created:</li>
+</ol>
+<ql-code-block language="bash">
+kubectl get pods
+</ql-code-block>
+<p>Make sure all the pods are ready. If they aren't, wait a few seconds and try again.</p>
+<ol start="19">
+<li>A load balancer was also added in the configuration file. Type the following command to see whether it was created:</li>
+</ol>
+<ql-code-block language="bash">
+kubectl get services
+</ql-code-block>
+<p>You should see something similar to below:</p>
+<p><img alt="Output" src="https://cdn.qwiklabs.com/jhFrjgfIv06ZP6D5kFzbN7ZxTXT4xnDYgYZ076C5aU8%3D"></p>
+<p>If the load balancer's external IP address says "pending", wait a few seconds and try again.</p>
+<ol start="20">
+<li>When you have an external IP, open a browser tab and make a request to it. It should return <code>Hello Kubernetes Engine</code>. It might take a few seconds to be ready.</li>
+</ol>
+<p>Click <strong>Check my progress</strong> to verify the objective.
+<ql-activity-tracking step="2">
+Deploy to Kubernetes Engine
+</ql-activity-tracking></p>
+<h2 id="step6">Task 4. Deploy to Cloud Run</h2>
+<p>Cloud Run simplifies and automates deployments to Kubernetes. When you use Cloud Run, you don't need a configuration file. You simply choose a cluster for your application. With Cloud Run, you can use a cluster managed by Google, or you can use your own Kubernetes cluster.</p>
+<p>To use Cloud Run, your application needs to be deployed using a Docker image and it must be stateless.</p>
+<ol>
+<li>Open the Cloud Shell code editor and expand the <code>training-data-analyst/courses/design-process/deploying-apps-to-gcp</code> folder in the navigation pane on the left. Then, click <strong>main.py</strong> to open it.</li>
+<li>In the <strong>main()</strong> function, change the title to <code>Hello Cloud Run</code> as shown below:</li>
+</ol>
+<ql-code-block output="">
+@app.route("/")
+def main():
+    model = {"title" "Hello Cloud Run"}
+    return render_template('index.html', model=model)
+</ql-code-block>
+<ol start="3">
+<li>
+<p><strong>Save</strong> your change.</p>
+</li>
+<li>
+<p>To use Cloud Run, you need to build a Docker image. In Cloud Shell, enter the following commands to use Cloud Build to create the image and store it in Artifact Registry:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+cd ~/gcp-course/training-data-analyst/courses/design-process/deploying-apps-to-gcp
+gcloud builds submit --tag us-central1-docker.pkg.dev/$DEVSHELL_PROJECT_ID/devops-demo/cloud-run-image:v0.1 .
+</ql-code-block>
+<ol start="5">
+<li>
+<p>When the build completes, in the <strong>Navigation menu</strong> (<img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Cloud Run</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Create service</strong>.
+This enables the Cloud Run API.</p>
+</li>
+<li>
+<p>Click the <strong>Select</strong> link in the <code>Container image URL</code> text box and then click <strong>Artifact Registry</strong>. In the resulting dialog, expand <code>cloud-run-image</code> and select the image listed. Then click <strong>Select</strong>.</p>
+</li>
+<li>
+<p>In  <strong>Service name</strong>, type <strong>hello-cloud-run</strong>.</p>
+</li>
+<li>
+<p>In <strong>Autoscaling</strong> set the <strong>Maximum number of instances</strong> to <strong>6</strong>. Leave the rest as defaults.</p>
+</li>
+<li>
+<p>For <strong>Authentication</strong>, select <strong>Allow unauthenticated invocations</strong>.</p>
+</li>
+<li>
+<p>In <strong>Container(s), Volumes, Networking, Security</strong>, select <strong>default</strong> in the <strong>Execution environment</strong> section.</p>
+</li>
+<li>
+<p>Finally, click <strong>Create</strong>.</p>
+</li>
+<li>
+<p>It shouldn't take long for the service to deploy. When a green check appears, click on the URL that is automatically generated for the application. It should return <code>Hello Cloud Run</code>.</p>
+</li>
+</ol>
+<p>Click <strong>Check my progress</strong> to verify the objective.
+<ql-activity-tracking step="3">
+Deploy to Cloud Run
+</ql-activity-tracking></p>
+<h2 id="step7">Congratulations!</h2>
+<p>In this lab, you deployed applications to the Google Cloud services App Engine, Kubernetes Engine, and Cloud Run.</p>
+<h2 id="step8">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Set up your lab environment</a></li><li><a href="#step3">Task 1. Download a sample app from GitHub</a></li><li><a href="#step4">Task 2. Deploy to App Engine</a></li><li><a href="#step5">Task 3. Deploy to Kubernetes Engine with Cloud Build and Artifact Registry</a></li><li><a href="#step6">Task 4. Deploy to Cloud Run</a></li><li><a href="#step7">Congratulations!</a></li><li><a href="#step8">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab, you will deploy applications to the Google Cloud services App Engine, Kubernetes Engine, and Cloud Run.
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+90m access
+&middot;
+45m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/2462">https://googlecoursera.qwiklabs.com/catalog_lab/2462</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="2462" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+

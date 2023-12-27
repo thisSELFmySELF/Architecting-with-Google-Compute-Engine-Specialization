@@ -1,0 +1,1052 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Working with Virtual Machines | Qwiklabs</title>
+<meta name="action-cable-url" content="/cable" />
+<script>
+//<![CDATA[
+window.gon={};gon.deployment="googlecoursera-run";
+//]]>
+</script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer',"GTM-5XSKHDX");
+</script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/polyfills/webcomponents-loader-b1b28b59480cca2ab0c23485f64ba2ec8893bdc9.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/vendor-00b9f69ad908fc0b1976f728c833423441752435.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/application-383ac8dce987ca8ef68702cd64980b76aa83af6d.js"></script>
+<script src="https://cdn.qwiklabs.com/assets/hallofmirrors/hallofmirrors-ea1f357188726febdc7b0d7c93ee94beed0f285a.js"></script>
+<script id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=511e4158-0aec-4e3c-b2e6-4daa1769f51e'></script>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="B8bSERKSuGwyFL82GHiXyxckXhldLSzIzWR7agwN/Qe9EPpTLZfO9HxCul040Z/4n69TMxsw0RO1H0RzI5Ja7Q==" />
+<meta content='width=device-width, initial-scale=1.0, user-scalable=yes' name='viewport'>
+<meta content='1rRsY0INj8RvwB5EF5pwdxt2A2P9aDgAlsICaJ0d5w0' name='google-site-verification'>
+<meta content='#3681E4' property='msapplication-TileColor'>
+<meta content='/favicon-144.png' property='msapplication-TileImage'>
+<meta content='[{&quot;id&quot;:&quot;recaptcha_experiment&quot;,&quot;optimize_id&quot;:&quot;dpViOcLkT3qS4TvL2mRojA&quot;,&quot;title&quot;:&quot;No Recaptcha shown for trusted users&quot;,&quot;variant_index&quot;:0,&quot;variant&quot;:&quot;original&quot;}]' name='active-experiments'>
+<meta content='{&quot;userId&quot;:12197799,&quot;experimentIds&quot;:[&quot;search_updates&quot;,&quot;organization_announcements&quot;,&quot;organization_learning_plans&quot;,&quot;chat_off_for_signed_out_users&quot;,&quot;alexandria_show_bundle_errors&quot;,&quot;program_announcements&quot;,&quot;canonical_domain_redirect&quot;,&quot;program_learning_assignment&quot;,&quot;barker&quot;,&quot;used_in&quot;,&quot;course_upgrade&quot;,&quot;community_forum&quot;,&quot;peer_assignment&quot;,&quot;enforce_codebuild_verdicts&quot;,&quot;show_annual_purchase_now&quot;,&quot;oauth_risc_shutoff&quot;,&quot;teams&quot;,&quot;content_provider_admin&quot;]}' name='help-api-product-data'>
+<meta content='{&quot;groupIds&quot;:[&quot;non_suadmins&quot;,&quot;students&quot;,&quot;non_organization&quot;,&quot;non_program&quot;]}' name='help-api-custom-data'>
+<meta content='In this lab you will create a typical application VM and set it up with many of the necessary features. In this case a gaming system - a Minecraft server.
+' name='description'>
+<meta content='Qwiklabs' name='author'>
+<meta content='Working with Virtual Machines | Qwiklabs' property='og:title'>
+<meta content='website' property='og:type'>
+<meta content='/favicon-144.png' property='og:image'>
+<meta content='Qwiklabs' property='og:site_name'>
+<meta content='In this lab you will create a typical application VM and set it up with many of the necessary features. In this case a gaming system - a Minecraft server.
+' property='og:description'>
+<meta content='/qwiklabs_logo_900x887.png' property='og:logo' size='900x887'>
+<meta content='/qwiklabs_logo_994x187.png' property='og:logo' size='994x187'>
+
+
+<meta property="og:url" content="https://googlecoursera.qwiklabs.com/focuses/32642811?parent=lti_session" /><link href="https://googlecoursera.qwiklabs.com/focuses/32642811?parent=lti_session" rel="canonical" />
+<link color='#3681E4' href='/favicon-svg.svg' rel='mask-icon'>
+<link href='/favicon-180.png' rel='apple-touch-icon-precomposed'>
+<link href='/favicon-32.png' rel='shortcut icon' type='image/x-icon'>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400|Roboto+Mono:400,700|Roboto:300,400,500,700|Google+Sans:300,400,500,700|Google+Sans+Display:400|Material+Icons|Google+Material+Icons|Google+Sans+Text:400,500,700" media="screen" />
+
+<link rel="stylesheet" href="https://cdn.qwiklabs.com/assets/application-29602dc272dc25b87d80aad082aeac190a74d2ab.css" media="all" />
+<link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" media="screen" />
+
+
+<style>
+  :root {
+    --primary-text-on-surface-color: #1a73e8;
+    --primary-text-on-surface-color-dark: #1568d6;
+    --primary-text-on-surface-color-darker: #135ec1;
+    --primary-text-on-surface-color-darkest: #1154ac;
+    --primary-surface-color: #1a73e8;
+    --primary-surface-color-rgb: 26,115,232;
+    --primary-surface-color-light: #d1e3fa;
+    --primary-surface-color-lightest: #e8f1fd;
+    --text-on-primary-color: #ffffff;
+    --accent-text-on-surface-color: #f29900;
+    --accent-surface-color: #f9ab00;
+    --accent-surface-color-rgb: 249,171,0;
+    --accent-surface-color-light: #ffefcc;
+    --text-on-accent-color: #202124;
+  }
+</style>
+
+
+
+</head>
+<body class='lab-show l-full no-nav application-new focuses focuses-show lab-show l-full no-nav '>
+<div class='header-container'>
+<div class='header'>
+<ql-toolbar jumpEnabled>
+<div class='header__title' slot='title'>
+<ql-icon-button label="Back" href="https://www.coursera.org/" id="bc7daaa23a54dba3" target="_self" tip="Back">arrow_back</ql-icon-button>
+<h1 class='ql-title-medium'>Working with Virtual Machines</h1>
+</div>
+<div class='header__actions' slot='action'>
+<ql-icon-button id='control-panel-target' style='display: none;'>
+dashboard
+</ql-icon-button>
+<ql-menu for='control-panel-target' id='control-panel-menu'></ql-menu>
+<ql-icon-button class='mobile-hide' icon='help_outline' id='help-menu-button' label='Open help menu' tip='Help'></ql-icon-button>
+<ql-menu for='help-menu-button' id='help-menu'>
+<ql-menu-item data-analytics-action='opened_help' data-analytics-label='lab' label='Help Center' onclick='hallofmirrors.helpService.startHelp({&quot;productData&quot;:{&quot;userId&quot;:12197799},&quot;context&quot;:&quot;lab&quot;})'></ql-menu-item>
+<ql-menu-item href='mailto:support@qwiklabs.com' label='Email support'></ql-menu-item>
+<ql-menu-item label='Chat support' onClick='ql.chat.open()'></ql-menu-item>
+</ql-menu>
+
+<ql-icon-button class='mobile-hide' icon='language' id='language' label='Select your language preference' tip='Language'></ql-icon-button>
+<ql-menu for='language'>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ar' href='/focuses/32642811?locale=ar&amp;parent=lti_session' label='العربية‬‎' lang='ar'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='de' href='/focuses/32642811?locale=de&amp;parent=lti_session' label='Deutsch' lang='de'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='en' href='/focuses/32642811?locale=en&amp;parent=lti_session' label='English' lang='en'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='es' href='/focuses/32642811?locale=es&amp;parent=lti_session' label='español (Latinoamérica)' lang='es'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr' href='/focuses/32642811?locale=fr&amp;parent=lti_session' label='français' lang='fr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='fr_CA' href='/focuses/32642811?locale=fr_CA&amp;parent=lti_session' label='français (Canada)' lang='fr-CA'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='he' href='/focuses/32642811?locale=he&amp;parent=lti_session' label='עברית' lang='he'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='id' href='/focuses/32642811?locale=id&amp;parent=lti_session' label='bahasa Indonesia' lang='id'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='it' href='/focuses/32642811?locale=it&amp;parent=lti_session' label='Italiano' lang='it'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ja' href='/focuses/32642811?locale=ja&amp;parent=lti_session' label='日本語' lang='ja'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ko' href='/focuses/32642811?locale=ko&amp;parent=lti_session' label='한국어' lang='ko'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pl' href='/focuses/32642811?locale=pl&amp;parent=lti_session' label='Polski' lang='pl'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_BR' href='/focuses/32642811?locale=pt_BR&amp;parent=lti_session' label='português (Brasil)' lang='pt-BR'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='pt_PT' href='/focuses/32642811?locale=pt_PT&amp;parent=lti_session' label='português (Portugal)' lang='pt-PT'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='ru' href='/focuses/32642811?locale=ru&amp;parent=lti_session' label='русский' lang='ru'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='tr' href='/focuses/32642811?locale=tr&amp;parent=lti_session' label='Türkçe' lang='tr'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='uk' href='/focuses/32642811?locale=uk&amp;parent=lti_session' label='український' lang='uk'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh' href='/focuses/32642811?locale=zh&amp;parent=lti_session' label='简体中文' lang='zh'></ql-menu-item>
+<ql-menu-item data-analytics-action='changed_locale' data-analytics-label='zh_TW' href='/focuses/32642811?locale=zh_TW&amp;parent=lti_session' label='繁體中文' lang='zh-TW'></ql-menu-item>
+</ql-menu>
+
+
+<ql-icon-button id='my_account' label='My account' tip='My account'>
+<ql-avatar src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+</ql-icon-button>
+<ql-menu for='my_account' id='my_account_menu' style='max-height: 640px'>
+<div class='my-account-menu'>
+<ql-avatar class='l-mtl l-mbl' size='120' src='https://lh3.googleusercontent.com/a/ACg8ocI6s7UhNvX_oCOJMPhLJPmqhqIgwu_5AK0t7wpjF-5jmQo=s320-c'></ql-avatar>
+<div class='my-account-menu__user-info l-mbl'>
+<h4 class='ql-title-medium'>Justin Ho</h4>
+<p class='ql-body-medium text--light'>cliffdove@gmail.com</p>
+<p class='ql-body-medium text--light'>
+</p>
+<a class="text--green ql-title-small" href="/my_account/payments"><ql-chip positive>
+0 Credits
+</ql-chip>
+</a></div>
+<div class='buttons l-mbl'>
+<a class="button button--hairline" id="settings" href="/my_account/profile">Settings</a>
+</div>
+<hr>
+<ql-button data-analytics-action='clicked_sign_out' href='/users/sign_out' method='delete'>
+Sign Out
+</ql-button>
+<div class='privacy l-mtl'>
+<a target="_blank" class="ql-label-medium text--light" href="/privacy_policy">Privacy</a>
+<span class='ql-label-medium text--light l-mls l-mrs'>&middot;</span>
+<a class="ql-label-medium text--light" href="/terms_of_service">Terms</a>
+</div>
+</div>
+</ql-menu>
+
+</div>
+</ql-toolbar>
+
+</div>
+</div>
+
+<nav class='nav-panel js-nav-panel'>
+<div class='nav-panel__logo'>
+<div class="custom-logo">Qwiklabs</div>
+</div>
+<nav class='ql-sidenav'>
+<ql-sidenav-item href='/' icon='home' label='Home'></ql-sidenav-item>
+
+<ql-sidenav-item href='/catalog' icon='school' label='Catalog'></ql-sidenav-item>
+
+<ql-sidenav-item href='/profile' icon='event_note' label='Profile'></ql-sidenav-item>
+
+</nav>
+
+</nav>
+<div class='nav-panel__overlay js-nav-toggle'></div>
+
+<main class='js-main' id='jump-content'>
+<div class='l-main-wrapper' id='main-wrapper'>
+
+
+
+
+<div class='lab-assessment__tab js-open-lab-assessment-panel'>
+<button class='js-lab-assessment-total-score'>
+—/100
+</button>
+</div>
+<div aria-labelledby='lab-assessment-checkpoint' class='lab-assessment__panel js-lab-assessment-panel' role='dialog'>
+<div class='lab-assessment__panel__header'>
+<h4 id='lab-assessment-checkpoint'>Checkpoints</h4>
+<ql-icon-button class='js-close-lab-assessment-panel' icon='arrow_forward' label='Close dialog'></ql-icon-button>
+</div>
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Create the VM and prepare the data disk
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Create the VM and prepare the data disk' step_no='1'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-1'>
+</span>
+/ 20
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Install the Java Runtime Environment (JRE) and the Minecraft server
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Install the Java Runtime Environment (JRE) and the Minecraft server' step_no='2'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-2'>
+</span>
+/ 20
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Allow client traffic
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Allow client traffic' step_no='3'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-3'>
+</span>
+/ 20
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Schedule regular backups
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Schedule regular backups' step_no='4'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-4'>
+</span>
+/ 20
+</p>
+</div>
+</div>
+
+<div class='lab-assessment__step'>
+<p class='lab-assessment__step__title' id='lab-assessment-step-title'>
+Server maintenance
+</p>
+<div class='lab-assessment__step__action'>
+<ql-button class='js-show-run-step-button' description='Server maintenance' step_no='5'>
+Check my progress
+</ql-button>
+<p class='lab-assessment__step__score'>
+<span class='js-assessment-step-score-5'>
+</span>
+/ 20
+</p>
+</div>
+</div>
+
+</div>
+<ql-drawer-container class='js-lab-state' data-analytics-payload='{&quot;label&quot;:&quot;Working with Virtual Machines&quot;,&quot;lab_name&quot;:&quot;Working with Virtual Machines&quot;,&quot;classroom_name&quot;:null,&quot;deployment&quot;:&quot;googlecoursera-run&quot;}' data-credits='0.0' data-focus-id='32642811' data-lab-billing-limit='0.0' data-lab-duration='5400' data-parent='lti_session' data-recaptcha-enabled id='lab-container'>
+<ql-drawer id='terminal-drawer' slot='drawer'>
+<iframe allow='clipboard-read' class='terminal' id='embedded-resource'></iframe>
+</ql-drawer>
+<ql-drawer-content class='js-lab-wrapper' id='lab-content' slot='drawer-content'>
+<ql-drawer-container id='lab-content-container'>
+<ql-drawer id='control-panel-drawer' open slot='drawer' width='320'>
+<ql-lab-control-panel class='ql-lab-control-panel__max-height control-panel js-lab-control-panel' connectionFiles='[]' labControlButton='{&quot;disabled&quot;:false,&quot;pending&quot;:false,&quot;running&quot;:false}' labDetails='[]' labTimer='{&quot;ticking&quot;:false,&quot;secondsRemaining&quot;:5400}' studentResources='[]'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr"   ></script>
+        <script>
+          // Define function so that we can call it again later if we need to reset it
+          // This executes reCAPTCHA and then calls our callback.
+          function executeRecaptchaForStartLab() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForStartLab('g-recaptcha-response-data-start-lab', token)
+              });
+            });
+          };
+          // Invoke immediately
+          executeRecaptchaForStartLab()
+
+          // Async variant so you can await this function from another async function (no need for
+          // an explicit callback function then!)
+          // Returns a Promise that resolves with the response token.
+          async function executeRecaptchaForStartLabAsync() {
+            return new Promise((resolve, reject) => {
+             grecaptcha.ready(async function() {
+                resolve(await grecaptcha.execute('6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr', {action: 'start_lab'}))
+              });
+            })
+          };
+
+                  var setInputWithRecaptchaResponseTokenForStartLab = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[start_lab]" id="g-recaptcha-response-data-start-lab" data-sitekey="6LeVI8IUAAAAAJNdox5eTkYrw9SbvhZ1TFyv3iHr" class="g-recaptcha g-recaptcha-response "/>
+
+<div aria-live='polite' class='hidden' id='recaptcha-v2-start-lab' slot='recaptcha'>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer ></script>
+<div data-sitekey="6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV" data-callback="recaptchaComplete" data-expired-callback="expireV2Token" class="g-recaptcha "></div>
+          <noscript>
+            <div>
+              <div style="width: 302px; height: 422px; position: relative;">
+                <div style="width: 302px; height: 422px; position: absolute;">
+                  <iframe
+                    src="https://www.recaptcha.net/recaptcha/api/fallback?k=6LeOI8IUAAAAAPkHlMAE9NReCD_1WD81iYlBlCnV"
+                    name="ReCAPTCHA"
+                    style="width: 302px; height: 422px; border-style: none; border: 0; overflow: hidden;">
+                  </iframe>
+                </div>
+              </div>
+              <div style="width: 300px; height: 60px; border-style: none;
+                bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px;
+                background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+                <textarea id="g-recaptcha-response" name="g-recaptcha-response"
+                  class="g-recaptcha-response"
+                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;
+                  margin: 10px 25px; padding: 0px; resize: none;">
+                </textarea>
+              </div>
+            </div>
+          </noscript>
+
+</div>
+</ql-lab-control-panel>
+</ql-drawer>
+<ql-drawer-content id='lab-instructions' slot='drawer-content'>
+<div class='lab-content-container'>
+<div class='alert alert--fake js-alert'>
+<p class='alert__message js-alert-message' role='alert'></p>
+<ql-icon-button class='alert__close js-alert-close' icon='clear'></ql-icon-button>
+<iframe class='l-ie-iframe-fix' tabindex='-1'></iframe>
+</div>
+<div class='lab-content__renderable-instructions js-lab-content'>
+<div class='lab-preamble'>
+<h1 class='lab-preamble__title'>
+Working with Virtual Machines
+</h1>
+<div class='lab-preamble__details ql-title-medium'>
+<span>1 hour 30 minutes</span>
+<span>Free</span>
+<div class='lab__rating'>
+<a aria-label="Lab Reviews" href="/focuses/32642811/reviews?parent=lti_session"><div class='rateit' data-rateit-readonly='true' data-rateit-value='4.4164'></div>
+
+</a></div>
+</div>
+</div>
+<div class='lab-outline-place-holder'></div>
+
+<div class='markdown-lab-instructions js-markdown-instructions' id='markdown-lab-instructions'>
+
+<h2 id="step1">Overview</h2>
+<p>In this lab, you set up a game application—a Minecraft server.</p>
+<p>The Minecraft server software will run on a Compute Engine instance.</p>
+<p>You use an e2-medium machine type that includes a 10-GB boot disk, 2 virtual CPU (vCPU), and 4 GB of RAM. This machine type runs Debian Linux by default.</p>
+<p>To make sure there is plenty of room for the  Minecraft server's world data, you also attach a high-performance 50-GB persistent solid-state drive (SSD) to the instance. This dedicated Minecraft server can support up to 50 players.</p>
+<h2 id="step2">Objectives</h2>
+<p>In this lab, you learn how to perform the following tasks:</p>
+<ul>
+<li>Customize an application server</li>
+<li>Install and configure necessary software</li>
+<li>Configure network access</li>
+<li>Schedule regular backups</li>
+</ul>
+<h3>Qwiklabs setup</h3>
+<p>For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.</p>
+<ol>
+<li>
+<p>Sign in to Qwiklabs using an <strong>incognito window</strong>.</p>
+</li>
+<li>
+<p>Note the lab's access time (for example, <code>1:15:00</code>), and make sure you can finish within that time.<br>
+There is no pause feature. You can restart if needed, but you have to start at the beginning.</p>
+</li>
+<li>
+<p>When ready, click <strong>Start lab</strong>.</p>
+</li>
+<li>
+<p>Note your lab credentials (<strong>Username</strong> and <strong>Password</strong>). You will use them to sign in to the Google Cloud Console.</p>
+</li>
+<li>
+<p>Click <strong>Open Google Console</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Use another account</strong> and copy/paste credentials for <strong>this</strong> lab into the prompts.<br>
+If you use other credentials, you'll receive errors or <strong>incur charges</strong>.</p>
+</li>
+<li>
+<p>Accept the terms and skip the recovery resource page.</p>
+</li>
+</ol>
+<aside class="warning"><p><strong>Note:</strong> Do not click <strong>End Lab</strong> unless you have finished the lab or want to restart it. This clears your work and removes the project.
+  </p>
+</aside>
+
+<h2 id="step3">Task 1. Create the VM</h2>
+<h3>Define a VM using advanced options</h3>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Compute Engine</strong> &gt; <strong>VM instances</strong>.</li>
+<li>Click <strong>Create Instance</strong>.</li>
+<li>Specify the following and leave the remaining settings as their defaults:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Name</strong></td>
+<td>mc-server</td>
+</tr>
+<tr>
+<td><strong>Region</strong></td>
+<td><ql-variable key="project_0.default_region" placeholder="REGION"></ql-variable></td>
+</tr>
+<tr>
+<td><strong>Zone</strong></td>
+<td><ql-variable key="project_0.default_zone" placeholder="ZONE"></ql-variable></td>
+</tr>
+<tr>
+<td><strong>Boot disk</strong></td>
+<td>Debian GNU/Linux 11 (bullseye)</td>
+</tr>
+<tr>
+<td><strong>Identity and API access &gt; Access scopes</strong></td>
+<td>Set access for each API</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>Read Write</td>
+</tr>
+
+</table>
+<ol start="4">
+<li>Click <strong>Advanced options</strong>.</li>
+<li>Click <strong>Disks</strong>.
+You will add a disk to be used for game storage.</li>
+<li>Click <strong>Add new disk</strong>.</li>
+<li>Specify the following and leave the remaining settings as their defaults:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Name</strong></td>
+<td>minecraft-disk</td>
+</tr>
+<tr>
+<td><strong>Disk type</strong></td>
+<td>SSD Persistent Disk</td>
+</tr>
+<tr>
+<td><strong>Disk Source type</strong></td>
+<td>Blank disk</td>
+</tr>
+<tr>
+<td><strong>Size (GB)</strong></td>
+<td>50</td>
+</tr>
+<tr>
+<td><strong>Encryption</strong></td>
+<td>Google-managed encryption key</td>
+</tr>
+
+</table>
+<ol start="8">
+<li>Click <strong>Save</strong>. This creates the disk and automatically attaches it to the VM when the VM is created.</li>
+<li>Click <strong>Networking</strong>.</li>
+<li>Specify the following and leave the remaining settings as their defaults:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Network tags</strong></td>
+<td>minecraft-server</td>
+</tr>
+<tr>
+<td><strong>Network interfaces</strong></td>
+<td>Click <strong>default</strong> to edit the interface</td>
+</tr>
+<tr>
+<td><strong>External IPv4 address</strong></td>
+<td>Reserve Static External IP Address</td>
+</tr>
+<tr>
+<td><strong>Name</strong></td>
+<td>mc-server-ip</td>
+</tr>
+
+</table>
+<ol start="11">
+<li>Click <strong>Reserve</strong>.</li>
+<li>Click <strong>Done</strong>.</li>
+<li>Click <strong>Create</strong>.</li>
+</ol>
+<h2 id="step4">Task 2. Prepare the data disk</h2>
+<h3>Create a directory and format and mount the disk</h3>
+<p>The disk is attached to the instance, but it is not yet mounted or formatted.</p>
+<ol>
+<li>For <strong>mc-server</strong>, click <strong>SSH</strong> to open a terminal and connect.</li>
+<li>To create a directory that serves as the mount point for the data disk, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo mkdir -p /home/minecraft
+</ql-code-block>
+<ol start="3">
+<li>To format the disk, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo mkfs.ext4 -F -E lazy_itable_init=0,\
+lazy_journal_init=0,discard \
+/dev/disk/by-id/google-minecraft-disk
+</ql-code-block>
+<p>Result <strong>(this is example output)</strong>:</p>
+<ql-code-block output="">
+mke2fs 1.42.12 (29-Aug-2014)
+Discarding device blocks: done
+Creating filesystem with 13107200 4k blocks and 3276800 inodes
+Filesystem UUID: 3d5b0563-f29e-4107-ad1a-ba7bf11dcf7c
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+        4096000, 7962624, 11239424
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+</ql-code-block>
+<ol start="4">
+<li>To mount the disk, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo mount -o discard,defaults /dev/disk/by-id/google-minecraft-disk /home/minecraft
+</ql-code-block>
+<p>No output is displayed after the disk is mounted.</p>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="1">
+      Create the VM and prepare the data disk
+</ql-activity-tracking>
+<h2 id="step5">Task 3. Install and run the application</h2>
+<p>The Minecraft server runs on top of the Java Virtual Machine (JVM), so it requires the Java Runtime Environment (JRE) to run. Because the server doesn't need a graphical user interface, you use the headless version of the JRE. This reduces the JRE's resource usage on the machine, which helps ensure that the Minecraft server has enough room to expand its own resource usage if needed.</p>
+<h3>Install the Java Runtime Environment (JRE) and the Minecraft server</h3>
+<ol>
+<li>In the SSH terminal for <strong>mc-server</strong>, to update the Debian repositories on the VM, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo apt-get update
+</ql-code-block>
+<ol start="2">
+<li>After the repositories are updated, to install the headless JRE, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo apt-get install -y default-jre-headless
+</ql-code-block>
+<ol start="3">
+<li>To navigate to the directory where the persistent disk is mounted, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+cd /home/minecraft
+</ql-code-block>
+<ol start="4">
+<li>To install <strong>wget</strong>, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo apt-get install wget
+</ql-code-block>
+<ol start="5">
+<li>
+<p>If prompted to continue, type <strong>Y</strong>.</p>
+</li>
+<li>
+<p>To download the current Minecraft server JAR file (1.11.2 JAR), run the following command:</p>
+</li>
+</ol>
+<ql-code-block language="bash">
+sudo wget https://launcher.mojang.com/v1/objects/d0d0fe2b1dc6ab4c65554cb734270872b72dadd6/server.jar
+</ql-code-block>
+<h3>Initialize the Minecraft server</h3>
+<ol>
+<li>To initialize the Minecraft server, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo java -Xmx1024M -Xms1024M -jar server.jar nogui
+</ql-code-block>
+<p>Result <strong>(example output)</strong>:</p>
+<ql-code-block output="">
+[21:01:54] [main/ERROR]: Failed to load properties from file: server.properties
+[21:01:54] [main/WARN]: Failed to load eula.txt
+[21:01:54] [main/INFO]: You need to agree to the EULA in order to run the server. Go to eula.txt for more info.
+</ql-code-block>
+<ql-warningbox><strong>Note: </strong>The Minecraft server won't run unless you accept the terms of the End User Licensing Agreement (EULA).
+</ql-warningbox>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="2">
+      Install the Java Runtime Environment (JRE) and the Minecraft server
+</ql-activity-tracking>
+<ol start="2">
+<li>To see the files that were created in the first initialization of the Minecraft server, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo ls -l
+</ql-code-block>
+<ql-warningbox><strong>Note: </strong>You could edit the <code>server.properties</code> file to change the default behavior of the Minecraft server.</ql-warningbox>
+<ol start="3">
+<li>To edit the EULA, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo nano eula.txt
+</ql-code-block>
+<ol start="4">
+<li>Change the last line of the file from <code>eula=false</code> to <code>eula=true</code>.</li>
+<li>Press <strong>Ctrl+O</strong>, <strong>ENTER</strong> to save the file and then press <strong>Ctrl+X</strong> to exit nano.</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>Don't try to restart the Minecraft server yet. You use a different technique in the next procedure.</ql-warningbox>
+<h3>Create a virtual terminal screen to start the Minecraft server</h3>
+<p>If you start the Minecraft server again now, it is tied to the life of your SSH session: that is, if you close your SSH terminal, the server is also terminated. To avoid this issue, you can use <code>screen</code>, an application that allows you to create a virtual terminal that can be "detached," becoming a background process, or "reattached," becoming a foreground process. When a virtual terminal is detached to the background, it will run whether you are logged in or not.</p>
+<ol>
+<li>To install <code>screen</code>, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo apt-get install -y screen
+</ql-code-block>
+<ol start="2">
+<li>To start your Minecraft server in a <code>screen</code> virtual terminal, run the following command (using the -<code>S</code> flag to name your terminal <code>mcs</code>):</li>
+</ol>
+<ql-code-block language="bash">
+sudo screen -S mcs java -Xmx1024M -Xms1024M -jar server.jar nogui
+</ql-code-block>
+<p>Result <strong>(example output)</strong>:</p>
+<ql-code-block output="">
+...
+[21:06:06] [Server-Worker-1/INFO]: Preparing spawn area: 83%
+[21:06:07] [Server-Worker-1/INFO]: Preparing spawn area: 85%
+[21:06:07] [Server-Worker-1/INFO]: Preparing spawn area: 86%
+[21:06:08] [Server-Worker-1/INFO]: Preparing spawn area: 88%
+[21:06:08] [Server-Worker-1/INFO]: Preparing spawn area: 89%
+[21:06:09] [Server-Worker-1/INFO]: Preparing spawn area: 91%
+[21:06:09] [Server-Worker-1/INFO]: Preparing spawn area: 93%
+[21:06:10] [Server-Worker-1/INFO]: Preparing spawn area: 95%
+[21:06:10] [Server-Worker-1/INFO]: Preparing spawn area: 98%
+[21:06:11] [Server-Worker-1/INFO]: Preparing spawn area: 99%
+[21:06:11] [Server thread/INFO]: Time elapsed: 55512 ms
+[21:06:11] [Server thread/INFO]: Done (102.484s)! For help, type "help"
+</ql-code-block>
+<h3>Detach from the screen and close your SSH session</h3>
+<ol>
+<li>To detach the screen terminal, press <strong>Ctrl+A</strong>, <strong>Ctrl+D</strong>. The terminal continues to run in the background. To reattach the terminal, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo screen -r mcs
+</ql-code-block>
+<ol start="2">
+<li>If necessary, exit the screen terminal by pressing <strong>Ctrl+A</strong>, <strong>Ctrl+D</strong>.</li>
+<li>To exit the SSH terminal, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+exit
+</ql-code-block>
+<p><strong>Congratulations!</strong> You set up and customized a VM and installed and configured application software—a Minecraft server!</p>
+<h2 id="step6">Task 4. Allow client traffic</h2>
+<p>Up to this point, the server has an external static IP address, but it cannot receive traffic because there is no firewall rule in place. Minecraft server uses TCP port 25565 by default. So you need to configure a firewall rule to allow these connections.</p>
+<h3>Create a firewall rule</h3>
+<ol>
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> (<img alt="Navigation menu" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>VPC network</strong> &gt; <strong>Firewall</strong>.</li>
+<li>Click <strong>Create firewall rule</strong>.</li>
+<li>Specify the following and leave the remaining settings as their defaults:</li>
+</ol>
+<table>
+
+<tr>
+<th>Property</th>
+<th>Value (type value or select option as specified)</th>
+</tr>
+
+
+<tr>
+<td><strong>Name</strong></td>
+<td>minecraft-rule</td>
+</tr>
+<tr>
+<td><strong>Target</strong></td>
+<td>Specified target tags</td>
+</tr>
+<tr>
+<td><strong>Target tags</strong></td>
+<td>minecraft-server</td>
+</tr>
+<tr>
+<td><strong>Source filter</strong></td>
+<td>IPv4 ranges</td>
+</tr>
+<tr>
+<td><strong>Source IPv4 ranges</strong></td>
+<td>0.0.0.0/0</td>
+</tr>
+<tr>
+<td><strong>Protocols and ports</strong></td>
+<td>Specified protocols and ports</td>
+</tr>
+
+</table>
+<ol start="4">
+<li>For <strong>tcp</strong>, specify port <strong>25565</strong>.</li>
+<li>Click <strong>Create</strong>.
+Users can now access your server from their Minecraft clients.</li>
+</ol>
+<h3>Verify server availability</h3>
+<ol>
+<li>In the left pane, click <strong>IP addresses</strong>.</li>
+<li>Locate and copy the <strong>External IP address</strong> for the <strong>mc-server</strong> VM.</li>
+<li>Use <a href="https://mcsrvstat.us/" target="_blank">Minecraft Server Status</a> to test your Minecraft server.</li>
+</ol>
+<ql-warningbox><p><strong>Note: </strong>If the above website is not working, you can use a different site or the Chrome extension:</p>
+<ul>
+<li><a href="https://dinnerbone.com/minecraft/tools/status/" target="_blank">Minecraft Server Status Checker</a></li>
+</ul>
+</ql-warningbox>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="3">
+      Allow client traffic
+</ql-activity-tracking>
+<h2 id="step7">Task 5. Schedule regular backups</h2>
+<p>Backing up your application data is a common activity. In this case, you configure the system to back up Minecraft world data to Cloud Storage.</p>
+<h3>Create a Cloud Storage bucket</h3>
+<ol>
+<li>On the <strong>Navigation menu</strong> (<img alt="Navigation menu" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D" title="Navigation menu">), click <strong>Compute Engine</strong> &gt; <strong>VM instances</strong>.</li>
+<li>For <strong>mc-server</strong>, click <strong>SSH</strong>.</li>
+<li>Create a globally unique bucket name, and store it in the environment variable YOUR_BUCKET_NAME. To make it unique, you can use your  Project ID. Run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+export YOUR_BUCKET_NAME=&lt;Enter your bucket name here&gt;
+</ql-code-block>
+<ol start="4">
+<li>Verify it with echo:</li>
+</ol>
+<ql-code-block language="plaintext">
+echo $YOUR_BUCKET_NAME
+</ql-code-block>
+<ol start="5">
+<li>To create the bucket using the gcloud storage tool, part of the Cloud SDK, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+gcloud storage buckets create gs://$YOUR_BUCKET_NAME-minecraft-backup
+</ql-code-block>
+<ql-warningbox><strong>Note: </strong>If this command failed, you might not have created a unique bucket name. If so, choose another bucket name, update your environment variable, and try to create the bucket again.</ql-warningbox>
+<ql-infobox><strong>Note: </strong>To make this environment variable permanent, you can add it to the root's <b>.profile</b> by running this command:<br>
+<code>echo YOUR_BUCKET_NAME=$YOUR_BUCKET_NAME &gt;&gt; ~/.profile</code></ql-infobox>
+<h3>Create a backup script</h3>
+<ol>
+<li>In the mc-server SSH terminal, navigate to your home directory:</li>
+</ol>
+<ql-code-block language="bash">
+cd /home/minecraft
+</ql-code-block>
+<ol start="2">
+<li>To create the script, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo nano /home/minecraft/backup.sh
+</ql-code-block>
+<ol start="3">
+<li>Copy and paste the following script into the file:</li>
+</ol>
+<ql-code-block language="bash">
+#!/bin/bash
+screen -r mcs -X stuff '/save-all\n/save-off\n'
+/usr/bin/gcloud storage cp -R ${BASH_SOURCE%/*}/world gs://${YOUR_BUCKET_NAME}-minecraft-backup/$(date "+%Y%m%d-%H%M%S")-world
+screen -r mcs -X stuff '/save-on\n'
+</ql-code-block>
+<ol start="4">
+<li>Press <strong>Ctrl+O</strong>, <strong>ENTER</strong> to save the file, and press <strong>Ctrl+X</strong> to exit nano.</li>
+</ol>
+<ql-infobox><strong>Note: </strong>The script saves the current state of the server's world data and pauses the server's auto-save functionality. Next, it backs up the server's world data directory (world) and places its contents in a timestamped directory (&lt;timestamp&gt;-world) in the Cloud Storage bucket. After the script finishes backing up the data, it resumes auto-saving on the Minecraft server.</ql-infobox>
+<ol start="5">
+<li>To make the script executable, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo chmod 755 /home/minecraft/backup.sh
+</ql-code-block>
+<h3>Test the backup script and schedule a cron job</h3>
+<ol>
+<li>In the mc-server SSH terminal, run the backup script:</li>
+</ol>
+<ql-code-block language="bash">
+. /home/minecraft/backup.sh
+</ql-code-block>
+<ol start="2">
+<li>After the script finishes, return to the Cloud Console.</li>
+<li>To verify that the backup file was written,  on the <strong>Navigation menu</strong> ( <img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>Cloud Storage</strong> &gt; <strong>Buckets</strong>.</li>
+<li>Click on the backup bucket name. You should see a folder with a date-time stamp name. Now that you've verified that the backups are working, you can schedule a cron job to automate the task.</li>
+<li>In the mc-server SSH terminal, open the cron table for editing:</li>
+</ol>
+<ql-code-block language="bash">
+sudo crontab -e
+</ql-code-block>
+<ol start="6">
+<li>When you are prompted to select an editor, type the number corresponding to <strong>nano</strong>, and press <strong>ENTER</strong>.</li>
+<li>At the bottom of the cron table, paste the following line:</li>
+</ol>
+<ql-code-block language="bash">
+0 */4 * * * /home/minecraft/backup.sh
+</ql-code-block>
+<ql-infobox><strong>Note: </strong>That line instructs cron to run backups every 4 hours.</ql-infobox>
+<ol start="8">
+<li>Press <strong>Ctrl+O</strong>, <strong>ENTER</strong> to save the cron table, and press <strong>Ctrl+X</strong> to exit nano.</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>This creates about 300 backups a month in Cloud Storage, so you will want to regularly delete them to avoid charges. Cloud Storage offers the Object Lifecycle Management feature to set a Time to Live (TTL) for objects, archive older versions of objects, or "downgrade" storage classes of objects to help manage costs.</ql-warningbox>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="4">
+      Schedule regular backups
+</ql-activity-tracking>
+<h2 id="step8">Task 6. Server maintenance</h2>
+<p>To perform server maintenance, you need to shut down the server.</p>
+<h3>Connect via SSH to the server, stop it and shut down the VM</h3>
+<ol>
+<li>In the mc-server SSH terminal, run the following command:</li>
+</ol>
+<ql-code-block language="bash">
+sudo screen -r -X stuff '/stop\n'
+</ql-code-block>
+<ol start="2">
+<li>In the Cloud Console, on the <strong>Navigation menu</strong> ( <img alt="Navigation menu icon" src="https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D">), click <strong>Compute Engine</strong> &gt; <strong>VM instances</strong>.</li>
+<li>Click <strong>mc-server</strong>.</li>
+<li>Click <strong>Stop</strong>.</li>
+<li>In the confirmation dialog, click <strong>Stop</strong> to confirm.
+You will be logged out of your SSH session.</li>
+</ol>
+<ql-warningbox><strong>Note: </strong>To start up your instance again, visit the instance page and then click <strong>Start</strong>. To start the Minecraft server again, you can establish an SSH connection with the instance, remount your persistent disk, and start your Minecraft server in a new screen terminal, just as you did previously.</ql-warningbox>
+<h3>Automate server maintenance with startup and shutdown scripts</h3>
+<p>Instead of following the manual process to mount the persistent disk and launch the server application in a screen, you can use metadata scripts to create a startup script and a shutdown script to do this for you.</p>
+<ol>
+<li>
+<p>Click <strong>mc-server</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Edit</strong>.</p>
+</li>
+<li>
+<p>For <strong>Metadata</strong>, click <strong>+ Add Item</strong> and specify the following:</p>
+<table>
+
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+
+
+<tr>
+<td><strong>startup-script-url</strong></td>
+<td>https://storage.googleapis.com/cloud-training/archinfra/mcserver/startup.sh</td>
+</tr>
+<tr>
+<td><strong>shutdown-script-url</strong></td>
+<td>https://storage.googleapis.com/cloud-training/archinfra/mcserver/shutdown.sh</td>
+</tr>
+
+</table>
+</li>
+</ol>
+<ql-infobox><strong>Note: </strong>You'll have to click <strong>Add item </strong> to add the shutdown-script-url. When you restart your instance, the startup script automatically mounts the Minecraft disk to the appropriate directory, starts your Minecraft server in a screen session, and detaches the session. When you stop the instance, the  shutdown script shuts down your Minecraft server before the instance shuts down. It's a best practice to store these scripts in Cloud Storage.</ql-infobox>
+<ol start="4">
+<li>Click <strong>Save</strong>.</li>
+</ol>
+<p>Click <em>Check my progress</em> to verify the objective.</p>
+<ql-activity-tracking step="5">
+      Server maintenance
+</ql-activity-tracking>
+<h2 id="step9">Task 7. Review</h2>
+<p>In this lab, you created a customized virtual machine instance by installing base software (a headless JRE) and application software (a Minecraft game server). You customized the VM by attaching and preparing a high-speed SSD data disk, and you reserved a static external IP so the address would remain consistent. Then you verified availability of the gaming server online.</p>
+<p>You set up a backup system to back up the server's data to a Cloud Storage bucket, and you tested the backup system. Then you automated backups using cron. Finally, you set up maintenance scripts using metadata for graceful startup and shutdown of the server.</p>
+<h2 id="step10">End your lab</h2>
+<p>When you have completed your lab, click <strong>End Lab</strong>. Google Cloud Skills Boost removes the resources you’ve used and cleans the account for you.</p>
+<p>You will be given an opportunity to rate the lab experience. Select the applicable number of stars, type a comment, and then click <strong>Submit</strong>.</p>
+<p>The number of stars indicates the following:</p>
+<ul>
+<li>1 star = Very dissatisfied</li>
+<li>2 stars = Dissatisfied</li>
+<li>3 stars = Neutral</li>
+<li>4 stars = Satisfied</li>
+<li>5 stars = Very satisfied</li>
+</ul>
+<p>You can close the dialog box if you don't want to provide feedback.</p>
+<p>For feedback, suggestions, or corrections, please use the <strong>Support</strong> tab.</p>
+
+<p>Copyright 2022 Google LLC All rights reserved. Google and the Google logo are trademarks of Google LLC. All other company and product names may be trademarks of the respective companies with which they are associated.</p>
+
+
+
+
+
+</div>
+</div>
+
+
+<div class='lab-content__end-lab-button js-end-lab-button-container hidden'>
+<ql-lab-control-button class='js-end-lab-button' running></ql-lab-control-button>
+</div>
+<!-- / TODO: Move recommendations into the end lab modal -->
+</div>
+<div aria-label='Lab Table of Contents' class='outline-container' id='js-outline-container' role='navigation'>
+<ul class='lab-content__outline js-lab-content-outline'>
+<li><a href="#step1">Overview</a></li><li><a href="#step2">Objectives</a></li><li><a href="#step3">Task 1. Create the VM</a></li><li><a href="#step4">Task 2. Prepare the data disk</a></li><li><a href="#step5">Task 3. Install and run the application</a></li><li><a href="#step6">Task 4. Allow client traffic</a></li><li><a href="#step7">Task 5. Schedule regular backups</a></li><li><a href="#step8">Task 6. Server maintenance</a></li><li><a href="#step9">Task 7. Review</a></li><li><a href="#step10">End your lab</a></li>
+</ul>
+</div>
+</ql-drawer-content>
+</ql-drawer-container>
+</ql-drawer-content>
+</ql-drawer-container>
+<ql-snackbar id='alert-snackbar'></ql-snackbar>
+
+
+
+</div>
+</main>
+
+<span class='hidden' id='flash-sibling-before'></span>
+<ql-snackbar></ql-snackbar>
+
+<script data-glue-cookie-notification-bar-category='2B' src='https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js'></script>
+
+<ql-dialog headline='Score Details' icon='task_alt' id='jupyter-feedback-modal'>
+<iframe id='jupyter-feedback-frame' srcdoc='' title='Jupyter Feedback'></iframe>
+</ql-dialog>
+
+<div class='modal fade' id='lab-details-modal'>
+<div class='modal-container'>
+<div class='modal-content mdl-shadow--24dp'>
+<div class='modal-body'>
+<p class='l-mbm'>
+In this lab you will create a typical application VM and set it up with many of the necessary features. In this case a gaming system - a Minecraft server.
+
+</p>
+<p class='small-label l-mbs'>
+<strong>
+Duration:
+</strong>
+0m setup
+&middot;
+90m access
+&middot;
+45m completion
+</p>
+<p class='small-label l-mbs'>
+<strong>AWS Region:</strong>
+[] <strong></strong>
+</p>
+<p class='small-label l-mbs'>
+<span><strong>Levels: </strong>introductory</span>
+</p>
+<p class='small-label'>
+<strong>
+Permalink:
+</strong>
+<a href="https://googlecoursera.qwiklabs.com/catalog_lab/1779">https://googlecoursera.qwiklabs.com/catalog_lab/1779</a>
+</p>
+</div>
+<div class='modal-actions'>
+<a class='button button--text' data-dismiss='modal'>
+Got It
+</a>
+</div>
+
+
+</div>
+</div>
+<iframe class='l-ie-iframe-fix' tabindex='-1' title='modal'></iframe>
+</div>
+<ql-dialog headline='How satisfied are you with this lab?&lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;' id='lab-review-dialog'>
+<form class="simple_form js-lab-review-form" id="new_lab_review" action="/lab_reviews" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><div aria-labelledby='lab-review-dialog' aria-required='true' aria-valuemax='5' aria-valuemin='0' aria-valuenow='0' class='rateit js-rateit' data-rateit-max='5' data-rateit-min='0' data-rateit-resetable='false' data-rateit-step='1' data-rateit-value='0' id='lab-review-rateit' role='slider' tabindex='0'></div>
+<div class='l-mtm'>
+
+<div class="control-group hidden lab_review_user_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="12197799" name="lab_review[user_id]" id="lab_review_user_id" /></div></div>
+<div class="control-group hidden lab_review_classroom_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[classroom_id]" id="lab_review_classroom_id" /></div></div>
+<div class="control-group hidden lab_review_lab_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" value="1779" name="lab_review[lab_id]" id="lab_review_lab_id" /></div></div>
+<div class="control-group hidden lab_review_focus_id"><div class="controls"><input class="hidden" autocomplete="off" type="hidden" name="lab_review[focus_id]" id="lab_review_focus_id" /></div></div>
+<div class="control-group hidden lab_review_rating"><div class="controls"><input class="hidden js-rating-input" autocomplete="off" type="hidden" name="lab_review[rating]" id="lab_review_rating" /></div></div>
+<div class="control-group text optional lab_review_comment"><label class="text optional control-label" for="lab_review_comment">Additional Comments</label><div class="controls"><textarea class="text optional" name="lab_review[comment]" id="lab_review_comment">
+</textarea></div></div>
+</div>
+</form><ql-button disabled id='submit' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+<ql-dialog headline='All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?' icon='error_outline' id='js-lab-are-you-sure-dialog'>
+<ql-button id='js-are-you-sure-button' label='Submit' slot='action' text></ql-button>
+</ql-dialog>
+
+
+<script>
+  $(function() {
+    ql.initMaterialInputs();
+    initChosen();
+    initSearch();
+    initTabs();
+    ql.list.init();
+    ql.favoriting.init();
+    ql.header.myAccount.init();
+    initTooltips();
+    ql.autocomplete.init();
+    ql.modals.init();
+    ql.toggleButtons.init();
+    ql.analytics.init();
+    ql.chat.init();
+  ql.jumpContent.init();
+  ql.labControlPanel.addRecaptchaErrorHandler();
+  initLabContent();
+  ql.labOutline.links.init();
+  initLabReviewModal();
+  initLabReviewTranslations( {"star_amount_1":"1 of 5 stars","star_amount_2":"2 of 5 stars","star_amount_3":"3 of 5 stars","star_amount_4":"4 of 5 stars","star_amount_5":"5 of 5 stars"} )
+  ql.labAssessment.init();
+  ql.labData.init();
+  initLabTranslations( {"are_you_sure":"All done? If you end this lab, you will lose all your work. You may not be able to restart the lab if there is a quota limit. Are you sure you want to end this lab?","in_progress":"*In Progress*","ending":"*Ending*","starting":"*Starting, please wait*","end_concurrent_labs":"Sorry, you can only run one lab at a time. To start this lab, please confirm that you want all of your existing labs to end.","copied":"Copied","no_resource":"Error retrieving resource.","no_support":"No Support","mac_press":"Press ⌘-C to copy","thanks_review":"Thanks for reviewing this lab.","windows_press":"Press Ctrl-C to copy","days":"days"} );
+  ql.labRun.init();
+  ql.navPanel.init();
+  ql.navigation.init();
+  
+  });
+</script>
+
+</body>
+</html>
+
